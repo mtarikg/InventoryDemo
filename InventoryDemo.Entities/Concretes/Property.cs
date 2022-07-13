@@ -14,6 +14,7 @@ namespace InventoryDemo.Entities.Concretes
         [Required(ErrorMessage = "The name of a property can not be empty.")]
         public string Name { get; set; }
         public string? ImageURL { get; set; }
+        public int Quantity { get; set; }
         public string? ShortDescription { get; set; }
         public string? FullDetail { get; set; }
         public DateTime CreatedDate { get; set; }

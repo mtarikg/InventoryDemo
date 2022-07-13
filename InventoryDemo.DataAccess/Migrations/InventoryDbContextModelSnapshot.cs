@@ -63,6 +63,9 @@ namespace InventoryDemo.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
                     b.Property<string>("ShortDescription")
                         .HasColumnType("nvarchar(max)");
 
