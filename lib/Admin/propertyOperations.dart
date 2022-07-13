@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
 import '../MyWidgets/myNavigatorButton.dart';
+import 'addProperty.dart';
+import 'editProperty.dart';
 
 class PropertyOperations extends StatelessWidget {
   const PropertyOperations({Key? key}) : super(key: key);
@@ -17,19 +19,62 @@ class PropertyOperations extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: const [
-            MyNavigatorButton(
-                text: "Add a Property", pageToNavigate: PropertyOperations()),
-            MyNavigatorButton(
-                text: "Edit a Property", pageToNavigate: PropertyOperations()),
-            MyNavigatorButton(
-                text: "Delete a Property",
-                pageToNavigate: PropertyOperations()),
-            MyNavigatorButton(
-                text: "Add Property to Personnel",
-                pageToNavigate: PropertyOperations()),
+            AddNewProperty(),
+            EditCurrentProperty(),
+            DeleteCurrentProperty(),
+            AddPropertyToPersonnel(),
           ],
         ),
       ),
     );
+  }
+}
+
+class AddPropertyToPersonnel extends StatelessWidget {
+  const AddPropertyToPersonnel({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MyNavigatorButton(
+        text: "Add Property to Personnel",
+        pageToNavigate: PropertyOperations());
+  }
+}
+
+class DeleteCurrentProperty extends StatelessWidget {
+  const DeleteCurrentProperty({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MyNavigatorButton(
+        text: "Delete a Property", pageToNavigate: PropertyOperations());
+  }
+}
+
+class EditCurrentProperty extends StatelessWidget {
+  const EditCurrentProperty({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MyNavigatorButton(
+        text: "Edit a Property", pageToNavigate: EditProperty());
+  }
+}
+
+class AddNewProperty extends StatelessWidget {
+  const AddNewProperty({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MyNavigatorButton(
+        text: "Add a Property", pageToNavigate: AddProperty());
   }
 }

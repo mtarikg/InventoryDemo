@@ -39,15 +39,26 @@ class _MyAppBarState extends State<MyAppBar> {
       backgroundColor: widget.backgroundColor,
       actions: [
         if (hasButton) ...[
-          IconButton(
-              onPressed: () {
-                Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                    (route) => false);
-              },
-              icon: const Icon(Icons.logout))
+          const LogOutButton()
         ]
       ],
     );
+  }
+}
+
+class LogOutButton extends StatelessWidget {
+  const LogOutButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+        onPressed: () {
+          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+              (route) => false);
+        },
+        icon: const Icon(Icons.logout));
   }
 }

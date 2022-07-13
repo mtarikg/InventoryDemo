@@ -28,9 +28,8 @@ class AdminMainPage extends StatelessWidget {
             MyNavigatorButton(
                 text: "Send a Supply Request",
                 pageToNavigate: SendRequest(
-                  title: "Send a Supply Request",
-                  backgroundColor: Colors.blue,
-                )),
+                    title: "Send a Supply Request",
+                    backgroundColor: Colors.blue)),
           ],
         ),
       ),
