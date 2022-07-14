@@ -1,4 +1,5 @@
-﻿using InventoryDemo.Entities.Concretes;
+﻿using InventoryDemo.Entities.Abstracts;
+using InventoryDemo.Entities.Concretes;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,10 @@ namespace InventoryDemo.DataAccess.Data
     public class InventoryDbContext : DbContext
     {
         public InventoryDbContext(DbContextOptions options) : base(options) { }
-
         public DbSet<User> Users { get; set; }
         public DbSet<Property> Properties { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<UsersProperties> UsersProperties { get; set; }
+        public DbSet<PersonnelsProperties> PersonnelsProperties { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,11 +24,11 @@ namespace InventoryDemo.DataAccess.Data
                 .HasForeignKey(p => p.CategoryID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<UsersProperties>().HasKey(up => new { up.UserID, up.PropertyID });
+            modelBuilder.Entity<PersonnelsProperties>().HasKey(pp => new { pp.PersonnelID, pp.PropertyID });
 
-            modelBuilder.Entity<User>().HasMany(u => u.Properties)
-                .WithOne(up => up.User)
-                .HasForeignKey(x => x.UserID)
+            modelBuilder.Entity<Personnel>().HasMany(p => p.Properties)
+                .WithOne(pp => pp.Personnel)
+                .HasForeignKey(x => x.PersonnelID)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

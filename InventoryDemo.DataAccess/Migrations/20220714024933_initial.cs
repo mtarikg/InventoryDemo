@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace InventoryDemo.DataAccess.Migrations
 {
-    public partial class initialMigration : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -28,10 +28,11 @@ namespace InventoryDemo.DataAccess.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -63,44 +64,44 @@ namespace InventoryDemo.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UsersProperties",
+                name: "PersonnelsProperties",
                 columns: table => new
                 {
-                    UserID = table.Column<int>(type: "int", nullable: false),
+                    PersonnelID = table.Column<int>(type: "int", nullable: false),
                     PropertyID = table.Column<int>(type: "int", nullable: false),
                     DueOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UsersProperties", x => new { x.UserID, x.PropertyID });
+                    table.PrimaryKey("PK_PersonnelsProperties", x => new { x.PersonnelID, x.PropertyID });
                     table.ForeignKey(
-                        name: "FK_UsersProperties_Properties_PropertyID",
+                        name: "FK_PersonnelsProperties_Properties_PropertyID",
                         column: x => x.PropertyID,
                         principalTable: "Properties",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UsersProperties_Users_UserID",
-                        column: x => x.UserID,
+                        name: "FK_PersonnelsProperties_Users_PersonnelID",
+                        column: x => x.PersonnelID,
                         principalTable: "Users",
                         principalColumn: "ID");
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_PersonnelsProperties_PropertyID",
+                table: "PersonnelsProperties",
+                column: "PropertyID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Properties_CategoryID",
                 table: "Properties",
                 column: "CategoryID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UsersProperties_PropertyID",
-                table: "UsersProperties",
-                column: "PropertyID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "UsersProperties");
+                name: "PersonnelsProperties");
 
             migrationBuilder.DropTable(
                 name: "Properties");

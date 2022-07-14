@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace InventoryDemo.DataAccess.Repositories.Abstracts
 {
-    public interface IRepository<T> where T : class, IEntity, new()
+    public interface IRepository<T> where T : class, IEntity
     {
         Task<IList<T>> GetAllEntities();
         Task<T> GetEntityByID(int id);

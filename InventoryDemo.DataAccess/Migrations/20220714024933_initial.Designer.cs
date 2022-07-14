@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventoryDemo.DataAccess.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    [Migration("20220713190533_initialMigration")]
-    partial class initialMigration
+    [Migration("20220714024933_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,37 @@ namespace InventoryDemo.DataAccess.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("InventoryDemo.Entities.Abstracts.User", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Users");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("User");
+                });
 
             modelBuilder.Entity("InventoryDemo.Entities.Concretes.Category", b =>
                 {
@@ -39,6 +70,24 @@ namespace InventoryDemo.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("InventoryDemo.Entities.Concretes.PersonnelsProperties", b =>
+                {
+                    b.Property<int>("PersonnelID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PropertyID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DueOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("PersonnelID", "PropertyID");
+
+                    b.HasIndex("PropertyID");
+
+                    b.ToTable("PersonnelsProperties");
                 });
 
             modelBuilder.Entity("InventoryDemo.Entities.Concretes.Property", b =>
@@ -78,51 +127,34 @@ namespace InventoryDemo.DataAccess.Migrations
                     b.ToTable("Properties");
                 });
 
-            modelBuilder.Entity("InventoryDemo.Entities.Concretes.User", b =>
+            modelBuilder.Entity("InventoryDemo.Entities.Concretes.Personnel", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasBaseType("InventoryDemo.Entities.Abstracts.User");
 
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Users");
+                    b.HasDiscriminator().HasValue("Personnel");
                 });
 
-            modelBuilder.Entity("InventoryDemo.Entities.Concretes.UsersProperties", b =>
+            modelBuilder.Entity("InventoryDemo.Entities.Concretes.PersonnelsProperties", b =>
                 {
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
+                    b.HasOne("InventoryDemo.Entities.Concretes.Personnel", "Personnel")
+                        .WithMany("Properties")
+                        .HasForeignKey("PersonnelID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
-                    b.Property<int>("PropertyID")
-                        .HasColumnType("int");
+                    b.HasOne("InventoryDemo.Entities.Concretes.Property", "Property")
+                        .WithMany("Personnels")
+                        .HasForeignKey("PropertyID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<DateTime>("DueOn")
-                        .HasColumnType("datetime2");
+                    b.Navigation("Personnel");
 
-                    b.HasKey("UserID", "PropertyID");
-
-                    b.HasIndex("PropertyID");
-
-                    b.ToTable("UsersProperties");
+                    b.Navigation("Property");
                 });
 
             modelBuilder.Entity("InventoryDemo.Entities.Concretes.Property", b =>
@@ -136,25 +168,6 @@ namespace InventoryDemo.DataAccess.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("InventoryDemo.Entities.Concretes.UsersProperties", b =>
-                {
-                    b.HasOne("InventoryDemo.Entities.Concretes.Property", "Property")
-                        .WithMany("Users")
-                        .HasForeignKey("PropertyID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InventoryDemo.Entities.Concretes.User", "User")
-                        .WithMany("Properties")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Property");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("InventoryDemo.Entities.Concretes.Category", b =>
                 {
                     b.Navigation("Properties");
@@ -162,10 +175,10 @@ namespace InventoryDemo.DataAccess.Migrations
 
             modelBuilder.Entity("InventoryDemo.Entities.Concretes.Property", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("Personnels");
                 });
 
-            modelBuilder.Entity("InventoryDemo.Entities.Concretes.User", b =>
+            modelBuilder.Entity("InventoryDemo.Entities.Concretes.Personnel", b =>
                 {
                     b.Navigation("Properties");
                 });

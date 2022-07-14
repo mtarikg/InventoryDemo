@@ -1,4 +1,4 @@
-﻿using InventoryDemo.Entities.Abstracts;
+﻿using InventoryDemo.Entities.Concretes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace InventoryDemo.DataAccess.Repositories.Abstracts
 {
-    public interface IUserRepository : IRepository<User>
+    public interface ICategoryRepository : IRepository<Category>
     {
-        Task<User> ValidateUser(string username, string password);
     }
 }

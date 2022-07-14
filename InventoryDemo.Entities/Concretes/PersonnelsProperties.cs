@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace InventoryDemo.Entities.Concretes
 {
-    public class UsersProperties
+    public class PersonnelsProperties
     {
-        public int UserID { get; set; }
-        public User User { get; set; }
+        public int PersonnelID { get; set; }
+        public Personnel Personnel { get; set; }
         public int PropertyID { get; set; }
         public Property Property { get; set; }
-
         public DateTime DueOn { get; set; }
     }
 }

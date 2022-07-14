@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace InventoryDemo.DataAccess.Repositories.Abstracts
 {
-    public class EFGenericRepository<T> : IRepository<T> where T : class, IEntity, new()
+    public class EFGenericRepository<T> : IRepository<T> where T : class, IEntity
     {
         protected readonly InventoryDbContext dbContext;
         protected readonly DbSet<T> dbSet;
