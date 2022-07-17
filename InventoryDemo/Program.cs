@@ -1,4 +1,9 @@
+using InventoryDemo.Business.Abstracts;
+using InventoryDemo.Business.AutoMapper;
+using InventoryDemo.Business.Concretes;
 using InventoryDemo.DataAccess.Data;
+using InventoryDemo.DataAccess.Repositories.Abstracts;
+using InventoryDemo.DataAccess.Repositories.Concretes;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +19,13 @@ builder.Services.AddDbContext<InventoryDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
 });
+builder.Services.AddAutoMapper(typeof(MapProfile));
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICategoryRepository, EFCategoryRepository>();
+builder.Services.AddScoped<IPropertyService, PropertyService>();
+builder.Services.AddScoped<IPropertyRepository, EFPropertyRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, EFUserRepository>();
 
 var app = builder.Build();
 

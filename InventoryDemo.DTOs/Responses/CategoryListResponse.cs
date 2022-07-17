@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace InventoryDemo.DTOs.Responses
 {
-    public class PropertyListResponse
+    public class CategoryListResponse
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public string? ImageURL { get; set; }
-        public string? FullDetail { get; set; }
-        public string? ShortDescription { get; set; }
     }
 }

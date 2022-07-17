@@ -1,12 +1,8 @@
 ﻿using InventoryDemo.DataAccess.Data;
 using InventoryDemo.DataAccess.Repositories.Abstracts;
 using InventoryDemo.Entities.Abstracts;
+using InventoryDemo.Entities.Concretes;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InventoryDemo.DataAccess.Repositories.Concretes
 {
@@ -16,6 +12,20 @@ namespace InventoryDemo.DataAccess.Repositories.Concretes
         public EFUserRepository(InventoryDbContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public async Task<ICollection<PersonnelsProperties>> GetPersonnelProperties(int userID)
+        {
+            var personnelProperties = await _dbContext.PersonnelsProperties.Where(pp => pp.UserID == userID).ToListAsync();
+
+            return personnelProperties;
+        }
+
+        public async Task<ICollection<User>> GetUsersByRole(int roleID)
+        {
+            var users = await _dbContext.Users.Where(u => u.RoleID == roleID).ToListAsync();
+
+            return users;
         }
 
         public async Task<User> ValidateUser(string username, string password)
