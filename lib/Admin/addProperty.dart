@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
 import 'package:inventory_demo/MyWidgets/myCategoryDropdown.dart';
 import 'package:inventory_demo/MyWidgets/myTextField.dart';
@@ -11,6 +13,9 @@ class AddProperty extends StatefulWidget {
 }
 
 class _AddPropertyState extends State<AddProperty> {
+  bool imageLoaded = false;
+  late File? file;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +34,33 @@ class _AddPropertyState extends State<AddProperty> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      imagePicker(),
+                      if (!imageLoaded) ...[
+                        imagePicker(),
+                      ] else ...[
+                        Container(
+                            child: file != null
+                                ? Stack(
+                                    children: [
+                                      ClipRRect(
+                                        child: Image.file(file!,
+                                            width: 200, height: 200),
+                                      ),
+                                      Positioned(
+                                        right: 25,
+                                        height: 25,
+                                        width: 50,
+                                        child: ElevatedButton(
+                                          onPressed: () => setState(() {
+                                            file = null;
+                                          }),
+                                          child: const Icon(Icons.clear,
+                                              size: 25, color: Colors.white),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : imagePicker())
+                      ],
                       const SizedBox(height: 10),
                       const PropertyName(),
                       const Category(),
@@ -72,13 +103,13 @@ class _AddPropertyState extends State<AddProperty> {
               SimpleDialogOption(
                 child: const Text("Camera"),
                 onPressed: () {
-                  //camera();
+                  camera();
                 },
               ),
               SimpleDialogOption(
                 child: const Text("Gallery"),
                 onPressed: () {
-                  //gallery();
+                  gallery();
                 },
               ),
               SimpleDialogOption(
@@ -90,6 +121,32 @@ class _AddPropertyState extends State<AddProperty> {
             ],
           );
         });
+  }
+
+  camera() async {
+    Navigator.pop(context);
+    var image = await ImagePicker().pickImage(
+        source: ImageSource.camera,
+        maxWidth: 800,
+        maxHeight: 600,
+        imageQuality: 80);
+    setState(() {
+      file = File(image!.path);
+      imageLoaded = true;
+    });
+  }
+
+  gallery() async {
+    Navigator.pop(context);
+    var image = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 600,
+        imageQuality: 80);
+    setState(() {
+      file = File(image!.path);
+      imageLoaded = true;
+    });
   }
 }
 

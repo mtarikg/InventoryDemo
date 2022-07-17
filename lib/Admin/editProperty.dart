@@ -3,7 +3,9 @@ import 'package:inventory_demo/MyWidgets/myAppBar.dart';
 import 'package:inventory_demo/MyWidgets/myTextField.dart';
 
 class EditProperty extends StatefulWidget {
-  const EditProperty({Key? key}) : super(key: key);
+  final int propertyID;
+
+  const EditProperty({Key? key, required this.propertyID}) : super(key: key);
 
   @override
   State<EditProperty> createState() => _EditPropertyState();

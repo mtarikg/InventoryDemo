@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'addPropertyForPersonnel.dart';
 import 'editProperty.dart';
 import '../Models/PropertyListResponse.dart';
 import '../Services/apiService.dart';
@@ -38,6 +39,7 @@ class _ViewPropertiesState extends State<ViewProperties> {
               return ListView.builder(
                   itemCount: snapshot.data!.length,
                   itemBuilder: (BuildContext context, int index) {
+                    int id = snapshot.data![index].id;
                     String name = snapshot.data![index].name.toString();
                     String imageURL = snapshot.data![index].imageURL.toString();
                     String fullDetail =
@@ -61,13 +63,15 @@ class _ViewPropertiesState extends State<ViewProperties> {
                                 children: [
                                   Image.network(imageURL,
                                       height: 100, width: 100),
-                                  const SizedBox(width: 30),
                                   Expanded(
-                                    child: Text(fullDetail == "null"
-                                        ? shortDescription == "null"
-                                            ? "No details"
-                                            : shortDescription
-                                        : "No details"),
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Text(fullDetail == "null"
+                                          ? shortDescription == "null"
+                                              ? "No details"
+                                              : shortDescription
+                                          : "No details"),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -82,7 +86,7 @@ class _ViewPropertiesState extends State<ViewProperties> {
                                   if (widget.buttonName != null) ...[
                                     TextButton(
                                         onPressed: () {
-                                          _buttonOperations(context);
+                                          _buttonOperations(context, id);
                                         },
                                         child: Text(
                                           widget.buttonName!,
@@ -107,11 +111,18 @@ class _ViewPropertiesState extends State<ViewProperties> {
     );
   }
 
-  void _buttonOperations(BuildContext context) {
+  void _buttonOperations(BuildContext context, int propertyID) {
     if (widget.buttonName! == "Add to Personnel") {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  AddPropertyForPersonnel(propertyID: propertyID)));
     } else if (widget.buttonName! == "Edit") {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const EditProperty()));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => EditProperty(propertyID: propertyID)));
     } else if (widget.buttonName! == "Delete") {}
   }
 }

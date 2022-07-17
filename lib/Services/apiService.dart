@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:inventory_demo/Models/CategoryListResponse.dart';
-
+import 'package:inventory_demo/Models/PersonnelListResponse.dart';
+import 'package:inventory_demo/Models/PersonnelPropertyListResponse.dart';
 import '../Models/PropertyListResponse.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,7 +16,18 @@ class ApiService {
           .map((item) => PropertyListResponse.fromJson(item))
           .toList();
     } else {
-      throw Exception('Failed to load properties data');
+      throw Exception('Failed to load the data of properties');
+    }
+  }
+
+  Future<PropertyListResponse> getPropertyByID(int propertyID) async {
+    final response =
+        await http.get(Uri.parse('$url/api/Properties/$propertyID'));
+
+    if (response.statusCode == 200) {
+      return PropertyListResponse.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load the data of property');
     }
   }
 
@@ -27,7 +39,33 @@ class ApiService {
           .map((item) => CategoryListResponse.fromJson(item))
           .toList();
     } else {
-      throw Exception('Failed to load properties data');
+      throw Exception('Failed to load the data of categories');
+    }
+  }
+
+  Future<List<PersonnelListResponse>> getPersonnels() async {
+    final response = await http.get(Uri.parse('$url/api/Users'));
+
+    if (response.statusCode == 200) {
+      return (json.decode(response.body) as List)
+          .map((item) => PersonnelListResponse.fromJson(item))
+          .toList();
+    } else {
+      throw Exception('Failed to load the data of personnel');
+    }
+  }
+
+  Future<List<PersonnelPropertyListResponse>> getPropertiesOfPersonnel(
+      int personnelID) async {
+    final response =
+        await http.get(Uri.parse('$url/api/Personnels/$personnelID'));
+
+    if (response.statusCode == 200) {
+      return (json.decode(response.body) as List)
+          .map((item) => PersonnelPropertyListResponse.fromJson(item))
+          .toList();
+    } else {
+      throw Exception('Failed to load the data of personnel properties');
     }
   }
 }
