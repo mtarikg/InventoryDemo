@@ -13,25 +13,31 @@ class _EditPropertyState extends State<EditProperty> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MyAppBar(
-        title: "Edit the property",
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            imagePicker(),
-            const SizedBox(height: 10),
-            const Quantity(),
-            const ShortDescription(),
-            const FullDetail(),
-            const CompleteButton()
-          ],
+        appBar: const MyAppBar(
+          title: "Edit the property",
+          centerTitle: true,
+          backgroundColor: Colors.blue,
         ),
-      ),
-    );
+        body: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    imagePicker(),
+                    const SizedBox(height: 10),
+                    const Quantity(),
+                    const ShortDescription(),
+                    const FullDetail(),
+                    const CompleteButton()
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 
   InkWell imagePicker() {

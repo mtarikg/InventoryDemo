@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:inventory_demo/Models/CategoryListResponse.dart';
+import 'package:inventory_demo/Services/apiService.dart';
 
 class MyCategoryDropdown extends StatefulWidget {
   final String title;
@@ -10,12 +12,13 @@ class MyCategoryDropdown extends StatefulWidget {
 }
 
 class _MyCategoryDropdownState extends State<MyCategoryDropdown> {
-  var categories = ["Test1", "Test2"];
+  late Future<List<CategoryListResponse>> futureCategories;
   String selectedCategory = "";
 
   @override
   void initState() {
     super.initState();
+    futureCategories = ApiService().getCategories();
   }
 
   void changeCategory(value) {
@@ -32,25 +35,36 @@ class _MyCategoryDropdownState extends State<MyCategoryDropdown> {
         children: [
           Align(alignment: Alignment.topLeft, child: Text(widget.title)),
           const SizedBox(height: 10),
-          Container(
-            decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                border: Border.all(color: Colors.black, width: 1)),
-            child: DropdownButtonFormField(
-              decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(left: 5)),
-              hint: const Text("Select a category"),
-              icon: const Icon(Icons.keyboard_arrow_down),
-              onChanged: changeCategory,
-              items: categories.map((valueItem) {
-                return DropdownMenuItem(
-                  value: valueItem,
-                  child: Text(valueItem),
+          FutureBuilder<List<CategoryListResponse>>(
+            future: futureCategories,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Container(
+                  decoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      border: Border.all(color: Colors.black, width: 1)),
+                  child: DropdownButtonFormField(
+                    decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.only(left: 5)),
+                    hint: const Text("Select a category"),
+                    icon: const Icon(Icons.keyboard_arrow_down),
+                    onChanged: changeCategory,
+                    items: snapshot.data!.map((valueItem) {
+                      String name = valueItem.name;
+
+                      return DropdownMenuItem(
+                        value: valueItem,
+                        child: Text(name),
+                      );
+                    }).toList(),
+                  ),
                 );
-              }).toList(),
-            ),
-          ),
+              }
+
+              return const Center(child: CircularProgressIndicator());
+            },
+          )
         ],
       ),
     );

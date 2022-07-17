@@ -13,22 +13,28 @@ class SendRequest extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(
-        title: title,
-        centerTitle: true,
-        backgroundColor: backgroundColor,
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          const Text("Enter the necessary information below."),
-          const RequestTitle(),
-          const RequestCategory(),
-          const RequestDescription(),
-          SendRequestButton(context: context)
-        ],
-      ),
-    );
+        appBar: MyAppBar(
+          title: title,
+          centerTitle: true,
+          backgroundColor: backgroundColor,
+        ),
+        body: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text("Enter the necessary information below."),
+                  const RequestTitle(),
+                  const RequestCategory(),
+                  const RequestDescription(),
+                  SendRequestButton(context: context)
+                ],
+              ),
+            ),
+          ],
+        ));
   }
 }
 

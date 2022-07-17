@@ -14,27 +14,36 @@ class _AddPropertyState extends State<AddProperty> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MyAppBar(
-        title: "Add a new property",
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            imagePicker(),
-            const SizedBox(height: 10),
-            const PropertyName(),
-            const Category(),
-            const Quantity(),
-            const ShortDescription(),
-            const FullDetail(),
-            const CompleteButton()
-          ],
+        appBar: const MyAppBar(
+          title: "Add a new property",
+          centerTitle: true,
+          backgroundColor: Colors.blue,
         ),
-      ),
-    );
+        body: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      imagePicker(),
+                      const SizedBox(height: 10),
+                      const PropertyName(),
+                      const Category(),
+                      const Quantity(),
+                      const ShortDescription(),
+                      const FullDetail(),
+                      const CompleteButton()
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 
   InkWell imagePicker() {

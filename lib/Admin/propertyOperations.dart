@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inventory_demo/Admin/viewProperties.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
 import '../MyWidgets/myNavigatorButton.dart';
 import 'addProperty.dart';
@@ -39,7 +40,7 @@ class AddPropertyToPersonnel extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MyNavigatorButton(
         text: "Add Property to Personnel",
-        pageToNavigate: PropertyOperations());
+        pageToNavigate: ViewProperties(buttonName: "Add to Personnel"));
   }
 }
 
@@ -51,7 +52,8 @@ class DeleteCurrentProperty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MyNavigatorButton(
-        text: "Delete a Property", pageToNavigate: PropertyOperations());
+        text: "Delete a Property",
+        pageToNavigate: ViewProperties(buttonName: "Delete"));
   }
 }
 
@@ -63,7 +65,8 @@ class EditCurrentProperty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MyNavigatorButton(
-        text: "Edit a Property", pageToNavigate: EditProperty());
+        text: "Edit a Property",
+        pageToNavigate: ViewProperties(buttonName: "Edit"));
   }
 }
 
