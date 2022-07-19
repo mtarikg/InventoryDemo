@@ -60,11 +60,12 @@ namespace InventoryDemo.Business.Concretes
             return propertiesListResponse;
         }
 
-        public async Task<Property> GetPropertyById(int id)
+        public async Task<PropertyListResponse> GetPropertyById(int id)
         {
             var property = await propertyRepository.GetEntityByID(id);
+            var propertyListResponse = mapper.Map<PropertyListResponse>(property);
 
-            return property;
+            return propertyListResponse;
         }
     }
 }

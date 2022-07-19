@@ -13,5 +13,6 @@ namespace InventoryDemo.DTOs.Responses
         public string? ImageURL { get; set; }
         public string? FullDetail { get; set; }
         public string? ShortDescription { get; set; }
+        public int CategoryID { get; set; }
     }
 }

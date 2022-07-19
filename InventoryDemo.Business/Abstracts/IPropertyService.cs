@@ -12,7 +12,7 @@ namespace InventoryDemo.Business.Abstracts
     public interface IPropertyService
     {
         Task<ICollection<PropertyListResponse>> GetAllProperties();
-        Task<Property> GetPropertyById(int id);
+        Task<PropertyListResponse> GetPropertyById(int id);
         Task<int> AddProperty(PropertyAddRequest propertyAddRequest);
         Task<int> EditProperty(PropertyEditRequest propertyEditRequest);
         Task DeleteProperty(int id);
