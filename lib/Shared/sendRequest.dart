@@ -3,7 +3,7 @@ import 'package:inventory_demo/MyWidgets/myAppBar.dart';
 import 'package:inventory_demo/MyWidgets/myCategoryDropdown.dart';
 import 'package:inventory_demo/MyWidgets/myTextField.dart';
 
-class SendRequest extends StatelessWidget {
+class SendRequest extends StatefulWidget {
   final String title;
   final dynamic backgroundColor;
 
@@ -11,12 +11,26 @@ class SendRequest extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<SendRequest> createState() => _SendRequestState();
+}
+
+class _SendRequestState extends State<SendRequest> {
+  ValueNotifier titleValue = ValueNotifier(null);
+  ValueNotifier descriptionValue = ValueNotifier(null);
+  ValueNotifier categoryValue = ValueNotifier(null);
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: MyAppBar(
-          title: title,
+          title: widget.title,
           centerTitle: true,
-          backgroundColor: backgroundColor,
+          backgroundColor: widget.backgroundColor,
         ),
         body: CustomScrollView(
           slivers: [
@@ -26,10 +40,19 @@ class SendRequest extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   const Text("Enter the necessary information below."),
-                  const RequestTitle(),
-                  const RequestCategory(),
-                  const RequestDescription(),
-                  SendRequestButton(context: context)
+                  Title(notifier: titleValue),
+                  Category(notifier: categoryValue),
+                  Description(notifier: descriptionValue),
+                  AnimatedBuilder(
+                      animation: Listenable.merge(
+                          [titleValue, descriptionValue, categoryValue]),
+                      builder: (context, value) {
+                        return SendButton(
+                            context: context,
+                            title: titleValue,
+                            description: descriptionValue,
+                            category: categoryValue);
+                      })
                 ],
               ),
             ),
@@ -38,27 +61,82 @@ class SendRequest extends StatelessWidget {
   }
 }
 
-class SendRequestButton extends StatelessWidget {
-  final BuildContext context;
+class Description extends StatelessWidget {
+  final ValueNotifier notifier;
 
-  const SendRequestButton({
+  const Description({
     Key? key,
-    required this.context,
+    required this.notifier,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    return MyTextField(
+        title: "Request Description", height: 200, notifier: notifier);
+  }
+}
+
+class Title extends StatelessWidget {
+  final ValueNotifier notifier;
+
+  const Title({
+    Key? key,
+    required this.notifier,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MyTextField(
+      title: "Request Title",
+      notifier: notifier,
+    );
+  }
+}
+
+class SendButton extends StatefulWidget {
+  final BuildContext context;
+  final ValueNotifier title;
+  final ValueNotifier description;
+  final ValueNotifier category;
+
+  const SendButton(
+      {Key? key,
+      required this.context,
+      required this.title,
+      required this.description,
+      required this.category})
+      : super(key: key);
+
+  @override
+  State<SendButton> createState() => _SendButtonState();
+}
+
+class _SendButtonState extends State<SendButton> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    bool titleResult = widget.title.value != null;
+    bool descriptionResult = widget.description.value != null;
+    bool categoryResult = widget.category.value != null;
+    bool isEnabled = titleResult && descriptionResult && categoryResult;
+
     return ElevatedButton(
-        onPressed: () {
-          alertComplete();
-        },
+        onPressed: isEnabled
+            ? () {
+                alertComplete();
+              }
+            : null,
         child: const Text("Send your request"));
   }
 
   void alertComplete() {
     Widget okButton = TextButton(
         onPressed: () {
-          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.of(widget.context, rootNavigator: true).pop();
         },
         child: const Text("OK"));
 
@@ -69,37 +147,19 @@ class SendRequestButton extends StatelessWidget {
     );
 
     showDialog(
-        context: context, builder: (BuildContext context) => alertDialog);
+        context: widget.context,
+        builder: (BuildContext context) => alertDialog);
   }
 }
 
-class RequestTitle extends StatelessWidget {
-  const RequestTitle({
-    Key? key,
-  }) : super(key: key);
+class Category extends StatelessWidget {
+  final ValueNotifier notifier;
+
+  const Category({Key? key, required this.notifier}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MyTextField(title: "Request Title");
-  }
-}
-
-class RequestDescription extends StatelessWidget {
-  const RequestDescription({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const MyTextField(title: "Request Description", height: 200);
-  }
-}
-
-class RequestCategory extends StatelessWidget {
-  const RequestCategory({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const MyCategoryDropdown(title: "Request Category");
+    return MyCategoryDropdown(
+        title: "Request Category", selectedValue: notifier);
   }
 }

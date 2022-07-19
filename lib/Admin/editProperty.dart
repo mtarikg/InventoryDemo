@@ -12,6 +12,10 @@ class EditProperty extends StatefulWidget {
 }
 
 class _EditPropertyState extends State<EditProperty> {
+  ValueNotifier quantityNotifier = ValueNotifier(null);
+  ValueNotifier descriptionNotifier = ValueNotifier(null);
+  ValueNotifier fullDetailNotifier = ValueNotifier(null);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,11 +33,22 @@ class _EditPropertyState extends State<EditProperty> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     imagePicker(),
-                    const SizedBox(height: 10),
-                    const Quantity(),
-                    const ShortDescription(),
-                    const FullDetail(),
-                    const CompleteButton()
+                    Quantity(notifier: quantityNotifier),
+                    ShortDescription(notifier: descriptionNotifier),
+                    FullDetail(notifier: fullDetailNotifier),
+                    AnimatedBuilder(
+                        animation: Listenable.merge([
+                          quantityNotifier,
+                          descriptionNotifier,
+                          fullDetailNotifier
+                        ]),
+                        builder: (context, value) {
+                          return CompleteButton(
+                              context: context,
+                              quantity: quantityNotifier,
+                              description: descriptionNotifier,
+                              fullDetail: fullDetailNotifier);
+                        })
                   ],
                 ),
               ),
@@ -90,45 +105,78 @@ class _EditPropertyState extends State<EditProperty> {
 }
 
 class FullDetail extends StatelessWidget {
+  final ValueNotifier notifier;
+
   const FullDetail({
     Key? key,
+    required this.notifier,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MyTextField(title: "Full Detail", height: 150);
+    return MyTextField(title: "Full Detail", height: 150, notifier: notifier);
   }
 }
 
 class ShortDescription extends StatelessWidget {
+  final ValueNotifier notifier;
+
   const ShortDescription({
     Key? key,
+    required this.notifier,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MyTextField(title: "Short Description");
+    return MyTextField(title: "Short Description", notifier: notifier);
   }
 }
 
 class Quantity extends StatelessWidget {
+  final ValueNotifier notifier;
+
   const Quantity({
     Key? key,
+    required this.notifier,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MyTextField(title: "Quantity");
+    return MyTextField(title: "Quantity", notifier: notifier);
   }
 }
 
-class CompleteButton extends StatelessWidget {
+class CompleteButton extends StatefulWidget {
+  final BuildContext context;
+  final ValueNotifier quantity;
+  final ValueNotifier description;
+  final ValueNotifier fullDetail;
+
   const CompleteButton({
     Key? key,
+    required this.context,
+    required this.quantity,
+    required this.description,
+    required this.fullDetail,
   }) : super(key: key);
 
   @override
+  State<CompleteButton> createState() => _CompleteButtonState();
+}
+
+class _CompleteButtonState extends State<CompleteButton> {
+  @override
   Widget build(BuildContext context) {
-    return ElevatedButton(onPressed: () {}, child: const Text("Complete"));
+    bool quantityResult = widget.quantity.value != null;
+    bool descriptionResult = widget.description.value != null;
+    bool isEnabled = quantityResult && descriptionResult;
+
+    return ElevatedButton(
+        onPressed: isEnabled
+            ? () {
+                null;
+              }
+            : null,
+        child: const Text("Complete"));
   }
 }

@@ -14,16 +14,19 @@ class PersonnelMainPage extends StatefulWidget {
 
 class _PersonnelMainPageState extends State<PersonnelMainPage> {
   late int _barIndex;
+  late PageController _pageController;
 
   @override
   void initState() {
-    super.initState();
     _barIndex = widget.index ?? 0;
+    _pageController = PageController(initialPage: _barIndex);
+    super.initState();
   }
 
   void _onTapped(int index) {
     setState(() {
       _barIndex = index;
+      _pageController.jumpToPage(index);
     });
   }
 
@@ -51,8 +54,9 @@ class _PersonnelMainPageState extends State<PersonnelMainPage> {
   }
 
   Widget _body() {
-    return IndexedStack(
-      index: _barIndex,
+    return PageView(
+      physics: const NeverScrollableScrollPhysics(),
+      controller: _pageController,
       children: const [
         HomePage(),
         ProfilePage(),

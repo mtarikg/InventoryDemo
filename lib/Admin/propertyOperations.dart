@@ -3,7 +3,6 @@ import 'package:inventory_demo/Admin/viewProperties.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
 import '../MyWidgets/myNavigatorButton.dart';
 import 'addProperty.dart';
-import 'editProperty.dart';
 
 class PropertyOperations extends StatelessWidget {
   const PropertyOperations({Key? key}) : super(key: key);

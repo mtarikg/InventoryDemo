@@ -44,7 +44,7 @@ class ApiService {
   }
 
   Future<List<PersonnelListResponse>> getPersonnels() async {
-    final response = await http.get(Uri.parse('$url/api/Users'));
+    final response = await http.get(Uri.parse('$url/api/Personnels'));
 
     if (response.statusCode == 200) {
       return (json.decode(response.body) as List)

@@ -15,6 +15,11 @@ class AddProperty extends StatefulWidget {
 class _AddPropertyState extends State<AddProperty> {
   bool imageLoaded = false;
   late File? file;
+  ValueNotifier nameNotifier = ValueNotifier(null);
+  ValueNotifier quantityNotifier = ValueNotifier(null);
+  ValueNotifier descriptionNotifier = ValueNotifier(null);
+  ValueNotifier fullDetailNotifier = ValueNotifier(null);
+  ValueNotifier categoryNotifier = ValueNotifier(null);
 
   @override
   Widget build(BuildContext context) {
@@ -37,37 +42,35 @@ class _AddPropertyState extends State<AddProperty> {
                       if (!imageLoaded) ...[
                         imagePicker(),
                       ] else ...[
-                        Container(
-                            child: file != null
-                                ? Stack(
-                                    children: [
-                                      ClipRRect(
-                                        child: Image.file(file!,
-                                            width: 200, height: 200),
-                                      ),
-                                      Positioned(
-                                        right: 25,
-                                        height: 25,
-                                        width: 50,
-                                        child: ElevatedButton(
-                                          onPressed: () => setState(() {
-                                            file = null;
-                                          }),
-                                          child: const Icon(Icons.clear,
-                                              size: 25, color: Colors.white),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : imagePicker())
+                        _showImage()
                       ],
                       const SizedBox(height: 10),
-                      const PropertyName(),
-                      const Category(),
-                      const Quantity(),
-                      const ShortDescription(),
-                      const FullDetail(),
-                      const CompleteButton()
+                      Name(nameNotifier: nameNotifier),
+                      const SizedBox(height: 10),
+                      Category(notifier: categoryNotifier),
+                      const SizedBox(height: 10),
+                      Quantity(notifier: quantityNotifier),
+                      const SizedBox(height: 10),
+                      ShortDescription(notifier: descriptionNotifier),
+                      const SizedBox(height: 10),
+                      FullDetail(notifier: fullDetailNotifier),
+                      AnimatedBuilder(
+                          animation: Listenable.merge([
+                            nameNotifier,
+                            categoryNotifier,
+                            quantityNotifier,
+                            descriptionNotifier,
+                            fullDetailNotifier
+                          ]),
+                          builder: (context, value) {
+                            return CompleteButton(
+                                context: context,
+                                name: nameNotifier,
+                                category: categoryNotifier,
+                                quantity: quantityNotifier,
+                                description: descriptionNotifier,
+                                fullDetail: fullDetailNotifier);
+                          })
                     ],
                   ),
                 ),
@@ -75,6 +78,31 @@ class _AddPropertyState extends State<AddProperty> {
             ),
           ],
         ));
+  }
+
+  Container _showImage() {
+    return Container(
+        child: file != null
+            ? Stack(
+                children: [
+                  ClipRRect(
+                    child: Image.file(file!, width: 200, height: 200),
+                  ),
+                  Positioned(
+                    right: 25,
+                    height: 25,
+                    width: 50,
+                    child: ElevatedButton(
+                      onPressed: () => setState(() {
+                        file = null;
+                      }),
+                      child: const Icon(Icons.clear,
+                          size: 25, color: Colors.white),
+                    ),
+                  ),
+                ],
+              )
+            : imagePicker());
   }
 
   InkWell imagePicker() {
@@ -150,68 +178,116 @@ class _AddPropertyState extends State<AddProperty> {
   }
 }
 
+class Name extends StatelessWidget {
+  const Name({
+    Key? key,
+    required this.nameNotifier,
+  }) : super(key: key);
+
+  final ValueNotifier nameNotifier;
+
+  @override
+  Widget build(BuildContext context) {
+    return MyTextField(title: "Property Name", notifier: nameNotifier);
+  }
+}
+
 class FullDetail extends StatelessWidget {
+  final ValueNotifier notifier;
+
   const FullDetail({
     Key? key,
+    required this.notifier,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MyTextField(title: "Full Detail", height: 150);
+    return MyTextField(title: "Full Detail", height: 150, notifier: notifier);
   }
 }
 
 class ShortDescription extends StatelessWidget {
+  final ValueNotifier notifier;
+
   const ShortDescription({
     Key? key,
+    required this.notifier,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MyTextField(title: "Short Description");
+    return MyTextField(title: "Short Description", notifier: notifier);
   }
 }
 
 class Quantity extends StatelessWidget {
+  final ValueNotifier notifier;
+
   const Quantity({
     Key? key,
+    required this.notifier,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MyTextField(title: "Quantity");
+    return MyTextField(title: "Quantity", notifier: notifier);
   }
 }
 
 class Category extends StatelessWidget {
+  final ValueNotifier notifier;
+
   const Category({
     Key? key,
+    required this.notifier,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MyCategoryDropdown(title: "Category");
+    return MyCategoryDropdown(title: "Category", selectedValue: notifier);
   }
 }
 
-class PropertyName extends StatelessWidget {
-  const PropertyName({
-    Key? key,
-  }) : super(key: key);
+class CompleteButton extends StatefulWidget {
+  final BuildContext context;
+  final ValueNotifier name;
+  final ValueNotifier category;
+  final ValueNotifier quantity;
+  final ValueNotifier description;
+  final ValueNotifier fullDetail;
 
-  @override
-  Widget build(BuildContext context) {
-    return const MyTextField(title: "Property Name");
-  }
-}
-
-class CompleteButton extends StatelessWidget {
   const CompleteButton({
     Key? key,
+    required this.context,
+    required this.name,
+    required this.category,
+    required this.quantity,
+    required this.description,
+    required this.fullDetail,
   }) : super(key: key);
 
   @override
+  State<CompleteButton> createState() => _CompleteButtonState();
+}
+
+class _CompleteButtonState extends State<CompleteButton> {
+  @override
   Widget build(BuildContext context) {
-    return ElevatedButton(onPressed: () {}, child: const Text("Complete"));
+    bool nameResult = widget.name.value != null;
+    bool categoryResult = widget.category.value != null;
+    bool quantityResult = widget.quantity.value != null;
+    bool descriptionResult = widget.description.value != null;
+    bool isEnabled = nameResult &&
+        categoryResult &&
+        quantityResult &&
+        descriptionResult;
+
+    return ElevatedButton(
+        onPressed: isEnabled
+            ? () {
+                null;
+              }
+            : null,
+        child: const Text("Complete"));
   }
 }

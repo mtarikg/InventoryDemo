@@ -10,9 +10,11 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: const MyAppBar(
         title: "Waiting Property Requests",
@@ -39,4 +41,7 @@ class _HomePageState extends State<HomePage> {
             builder: (context) => const PersonnelMainPage(index: 0)),
         (route) => false);
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

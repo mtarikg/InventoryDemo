@@ -4,16 +4,19 @@ import 'package:inventory_demo/Services/apiService.dart';
 
 class MyCategoryDropdown extends StatefulWidget {
   final String title;
+  final ValueNotifier selectedValue;
 
-  const MyCategoryDropdown({Key? key, required this.title}) : super(key: key);
+  const MyCategoryDropdown(
+      {Key? key, required this.title, required this.selectedValue})
+      : super(key: key);
 
   @override
   State<MyCategoryDropdown> createState() => _MyCategoryDropdownState();
 }
 
-class _MyCategoryDropdownState extends State<MyCategoryDropdown> {
+class _MyCategoryDropdownState extends State<MyCategoryDropdown>
+    with AutomaticKeepAliveClientMixin {
   late Future<List<CategoryListResponse>> futureCategories;
-  String selectedCategory = "";
 
   @override
   void initState() {
@@ -21,14 +24,15 @@ class _MyCategoryDropdownState extends State<MyCategoryDropdown> {
     futureCategories = ApiService().getCategories();
   }
 
-  void changeCategory(value) {
-    setState(() {
-      selectedCategory = value;
-    });
+  @override
+  void dispose() {
+    widget.selectedValue.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Padding(
       padding: const EdgeInsets.only(left: 25, right: 25),
       child: Column(
@@ -43,22 +47,29 @@ class _MyCategoryDropdownState extends State<MyCategoryDropdown> {
                   decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
                       border: Border.all(color: Colors.black, width: 1)),
-                  child: DropdownButtonFormField(
-                    decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.only(left: 5)),
-                    hint: const Text("Select a category"),
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                    onChanged: changeCategory,
-                    items: snapshot.data!.map((valueItem) {
-                      String name = valueItem.name;
+                  child: ValueListenableBuilder(
+                      valueListenable: widget.selectedValue,
+                      builder: (context, value, _) {
+                        return DropdownButtonFormField(
+                          decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.only(left: 5)),
+                          hint: const Text("Select a category"),
+                          icon: const Icon(Icons.keyboard_arrow_down),
+                          onChanged: (value) {
+                            widget.selectedValue.value =
+                                (value as CategoryListResponse).id;
+                          },
+                          items: snapshot.data!.map((valueItem) {
+                            String name = valueItem.name;
 
-                      return DropdownMenuItem(
-                        value: valueItem,
-                        child: Text(name),
-                      );
-                    }).toList(),
-                  ),
+                            return DropdownMenuItem(
+                              value: valueItem,
+                              child: Text(name),
+                            );
+                          }).toList(),
+                        );
+                      }),
                 );
               }
 
@@ -69,4 +80,7 @@ class _MyCategoryDropdownState extends State<MyCategoryDropdown> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
