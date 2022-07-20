@@ -46,6 +46,7 @@ namespace InventoryDemo.Business.Concretes
             var property = await propertyRepository.GetEntityByID(propertyEditRequest.ID);
             var editedProperty = mapper.Map<Property>(propertyEditRequest);
             editedProperty.Name = property.Name;
+            editedProperty.CategoryID = property.CategoryID;
             property = editedProperty;
             var result = await propertyRepository.Update(property);
 

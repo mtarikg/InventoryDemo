@@ -1,4 +1,5 @@
 ﻿using InventoryDemo.Business.Abstracts;
+using InventoryDemo.DTOs.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,6 +30,40 @@ namespace InventoryDemo.API.Controllers
             var property = await propertyService.GetPropertyById(id);
 
             return Ok(property);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddProperty(PropertyAddRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var addedPropertyID = await propertyService.AddProperty(request);
+
+                return CreatedAtAction(nameof(GetPropertyByID), routeValues: new { id = addedPropertyID }, null);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteProperty(int id)
+        {
+            await propertyService.DeleteProperty(id);
+
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateProperty(int id, PropertyEditRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                await propertyService.EditProperty(request);
+
+                return Ok();
+            }
+
+            return BadRequest();
         }
     }
 }
