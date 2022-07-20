@@ -17,7 +17,13 @@ class MyTextField extends StatefulWidget {
 }
 
 class _MyTextFieldState extends State<MyTextField> {
-  final _controller = TextEditingController();
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    _controller = TextEditingController(text: widget.notifier.value);
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -42,14 +48,16 @@ class _MyTextFieldState extends State<MyTextField> {
               valueListenable: widget.notifier,
               builder: (context, _, __) {
                 return TextField(
+                  controller: _controller,
                   textAlign: TextAlign.left,
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.only(left: 5),
                   ),
-                  onEditingComplete: () {
-                    widget.notifier.value = _controller.text;
-                    FocusManager.instance.primaryFocus?.unfocus();
+                  onSubmitted: (value) {
+                    setState(() {
+                      widget.notifier.value = value;
+                    });
                   },
                 );
               },

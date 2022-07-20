@@ -1,6 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:inventory_demo/Models/Property/PropertyEditRequest.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
 import 'package:inventory_demo/MyWidgets/myTextField.dart';
+import 'package:inventory_demo/Services/apiService.dart';
+import '../Models/Property/PropertyListResponse.dart';
+import '../Services/adminService.dart';
+import 'mainPage.dart';
 
 class EditProperty extends StatefulWidget {
   final int propertyID;
@@ -12,9 +20,27 @@ class EditProperty extends StatefulWidget {
 }
 
 class _EditPropertyState extends State<EditProperty> {
-  ValueNotifier quantityNotifier = ValueNotifier(null);
-  ValueNotifier descriptionNotifier = ValueNotifier(null);
-  ValueNotifier fullDetailNotifier = ValueNotifier(null);
+  late Future<PropertyListResponse> futureProperty;
+  late bool imageLoaded;
+  late dynamic image;
+  late ValueNotifier quantityNotifier;
+  late ValueNotifier descriptionNotifier;
+  late ValueNotifier fullDetailNotifier;
+
+  @override
+  void initState() {
+    futureProperty = ApiService().getPropertyByID(widget.propertyID);
+    futureProperty.then((value) async {
+      quantityNotifier = ValueNotifier(value.quantity.toString());
+      descriptionNotifier = ValueNotifier(value.shortDescription);
+      fullDetailNotifier = ValueNotifier(value.fullDetail);
+      String base64Image = value.imageURL.toString();
+      base64Image.isEmpty ? imageLoaded = false : imageLoaded = true;
+      Uint8List decodedString = base64Decode(base64Image);
+      image = decodedString;
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,37 +50,85 @@ class _EditPropertyState extends State<EditProperty> {
           centerTitle: true,
           backgroundColor: Colors.blue,
         ),
-        body: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    imagePicker(),
-                    Quantity(notifier: quantityNotifier),
-                    ShortDescription(notifier: descriptionNotifier),
-                    FullDetail(notifier: fullDetailNotifier),
-                    AnimatedBuilder(
-                        animation: Listenable.merge([
-                          quantityNotifier,
-                          descriptionNotifier,
-                          fullDetailNotifier
-                        ]),
-                        builder: (context, value) {
-                          return CompleteButton(
-                              context: context,
-                              quantity: quantityNotifier,
-                              description: descriptionNotifier,
-                              fullDetail: fullDetailNotifier);
-                        })
-                  ],
-                ),
-              ),
-            ),
-          ],
+        body: FutureBuilder<PropertyListResponse>(
+          future: futureProperty,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              // String imageURL = snapshot.data!.imageURL.toString();
+              // String shortDescription =
+              //     snapshot.data!.shortDescription.toString();
+              // String fullDetail = snapshot.data!.fullDetail.toString();
+              return CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          if (imageLoaded) ...[
+                            _showImage()
+                          ] else ...[
+                            imagePicker()
+                          ],
+                          Quantity(notifier: quantityNotifier),
+                          ShortDescription(notifier: descriptionNotifier),
+                          FullDetail(notifier: fullDetailNotifier),
+                          AnimatedBuilder(
+                              animation: Listenable.merge([
+                                quantityNotifier,
+                                descriptionNotifier,
+                                fullDetailNotifier
+                              ]),
+                              builder: (context, value) {
+                                return CompleteButton(
+                                    context: context,
+                                    id: widget.propertyID,
+                                    image: image is File ? image : null,
+                                    quantity: quantityNotifier,
+                                    description: descriptionNotifier,
+                                    fullDetail: fullDetailNotifier);
+                              })
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+
+            return const Center(child: CircularProgressIndicator());
+          },
         ));
+  }
+
+  Container _showImage() {
+    return Container(
+        child: image != null
+            ? Stack(
+                children: [
+                  ClipRRect(
+                    child: image is File?
+                        ? Image.file(image!, width: 200, height: 200)
+                        : Image.memory(image, width: 200, height: 200),
+                  ),
+                  Positioned(
+                    right: 25,
+                    height: 25,
+                    width: 50,
+                    child: ElevatedButton(
+                      onPressed: () => setState(() {
+                        image = null;
+                      }),
+                      child: const Icon(Icons.clear,
+                          size: 25, color: Colors.white),
+                    ),
+                  ),
+                ],
+              )
+            : imagePicker());
   }
 
   InkWell imagePicker() {
@@ -148,6 +222,8 @@ class Quantity extends StatelessWidget {
 
 class CompleteButton extends StatefulWidget {
   final BuildContext context;
+  final int id;
+  final File? image;
   final ValueNotifier quantity;
   final ValueNotifier description;
   final ValueNotifier fullDetail;
@@ -158,6 +234,8 @@ class CompleteButton extends StatefulWidget {
     required this.quantity,
     required this.description,
     required this.fullDetail,
+    required this.id,
+    this.image,
   }) : super(key: key);
 
   @override
@@ -173,10 +251,65 @@ class _CompleteButtonState extends State<CompleteButton> {
 
     return ElevatedButton(
         onPressed: isEnabled
-            ? () {
-                null;
+            ? () async {
+                String? imageURL;
+                if (widget.image != null) {
+                  final imageBytes = await widget.image!.readAsBytes();
+                  final base64Image = base64Encode(imageBytes);
+                  imageURL = base64Image;
+                }
+
+                PropertyEditRequest request = PropertyEditRequest(
+                    imageURL: imageURL,
+                    quantity: int.parse(widget.quantity.value),
+                    shortDescription: widget.description.value,
+                    fullDetail: widget.fullDetail.value);
+                bool result =
+                    await AdminService().editProperty(widget.id, request);
+
+                result ? alertComplete() : alertWarning();
               }
             : null,
         child: const Text("Complete"));
+  }
+
+  void alertComplete() {
+    Widget okButton = TextButton(
+        onPressed: () {
+          Navigator.of(widget.context, rootNavigator: true).pop();
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const AdminMainPage()),
+              (route) => false);
+        },
+        child: const Text("OK"));
+
+    var alertDialog = AlertDialog(
+      title: const Text("Complete"),
+      content: const Text("The property has been updated successfully."),
+      actions: [okButton],
+    );
+
+    showDialog(
+        context: widget.context,
+        builder: (BuildContext context) => alertDialog);
+  }
+
+  void alertWarning() {
+    Widget okButton = TextButton(
+        onPressed: () {
+          Navigator.of(widget.context, rootNavigator: true).pop();
+        },
+        child: const Text("OK"));
+
+    var alertDialog = AlertDialog(
+      title: const Text("Error"),
+      content: const Text("The property could not be updated. Try again."),
+      actions: [okButton],
+    );
+
+    showDialog(
+        context: widget.context,
+        builder: (BuildContext context) => alertDialog);
   }
 }

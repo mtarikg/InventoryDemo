@@ -1,9 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:inventory_demo/Admin/mainPage.dart';
+import 'package:inventory_demo/Models/Property/PropertyAddRequest.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
 import 'package:inventory_demo/MyWidgets/myCategoryDropdown.dart';
 import 'package:inventory_demo/MyWidgets/myTextField.dart';
+import 'package:inventory_demo/Services/adminService.dart';
 
 class AddProperty extends StatefulWidget {
   const AddProperty({Key? key}) : super(key: key);
@@ -60,11 +64,12 @@ class _AddPropertyState extends State<AddProperty> {
                             categoryNotifier,
                             quantityNotifier,
                             descriptionNotifier,
-                            fullDetailNotifier
+                            fullDetailNotifier,
                           ]),
                           builder: (context, value) {
                             return CompleteButton(
                                 context: context,
+                                image: imageLoaded ? file : null,
                                 name: nameNotifier,
                                 category: categoryNotifier,
                                 quantity: quantityNotifier,
@@ -126,7 +131,7 @@ class _AddPropertyState extends State<AddProperty> {
         context: context,
         builder: (context) {
           return SimpleDialog(
-            title: const Text("Select from"),
+            title: const Text("Upload image from"),
             children: [
               SimpleDialogOption(
                 child: const Text("Camera"),
@@ -250,6 +255,7 @@ class Category extends StatelessWidget {
 
 class CompleteButton extends StatefulWidget {
   final BuildContext context;
+  final dynamic image;
   final ValueNotifier name;
   final ValueNotifier category;
   final ValueNotifier quantity;
@@ -259,6 +265,7 @@ class CompleteButton extends StatefulWidget {
   const CompleteButton({
     Key? key,
     required this.context,
+    required this.image,
     required this.name,
     required this.category,
     required this.quantity,
@@ -273,21 +280,73 @@ class CompleteButton extends StatefulWidget {
 class _CompleteButtonState extends State<CompleteButton> {
   @override
   Widget build(BuildContext context) {
-    bool nameResult = widget.name.value != null;
+    bool nameResult =
+        widget.name.value != null && widget.name.value.toString().isNotEmpty;
     bool categoryResult = widget.category.value != null;
-    bool quantityResult = widget.quantity.value != null;
-    bool descriptionResult = widget.description.value != null;
-    bool isEnabled = nameResult &&
-        categoryResult &&
-        quantityResult &&
-        descriptionResult;
+    bool quantityResult = widget.quantity.value != null &&
+        widget.quantity.value.toString().isNotEmpty;
+    bool descriptionResult = widget.description.value != null &&
+        widget.description.value.toString().isNotEmpty;
+    bool isEnabled =
+        nameResult && categoryResult && quantityResult && descriptionResult;
 
     return ElevatedButton(
         onPressed: isEnabled
-            ? () {
-                null;
+            ? () async {
+                final imageBytes = await widget.image?.readAsBytes();
+                final base64Image = base64Encode(imageBytes!);
+                PropertyAddRequest request = PropertyAddRequest(
+                    name: widget.name.value,
+                    imageURL: base64Image,
+                    quantity: int.parse(widget.quantity.value),
+                    shortDescription: widget.description.value,
+                    fullDetail: widget.fullDetail.value,
+                    categoryID: widget.category.value);
+                bool result = await AdminService().addProperty(request);
+
+                result ? alertComplete() : alertWarning();
               }
             : null,
         child: const Text("Complete"));
+  }
+
+  void alertComplete() {
+    Widget okButton = TextButton(
+        onPressed: () {
+          Navigator.of(widget.context, rootNavigator: true).pop();
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const AdminMainPage()),
+              (route) => false);
+        },
+        child: const Text("OK"));
+
+    var alertDialog = AlertDialog(
+      title: const Text("Complete"),
+      content: const Text("The property has been added successfully."),
+      actions: [okButton],
+    );
+
+    showDialog(
+        context: widget.context,
+        builder: (BuildContext context) => alertDialog);
+  }
+
+  void alertWarning() {
+    Widget okButton = TextButton(
+        onPressed: () {
+          Navigator.of(widget.context, rootNavigator: true).pop();
+        },
+        child: const Text("OK"));
+
+    var alertDialog = AlertDialog(
+      title: const Text("Error"),
+      content: const Text("The property could not be added. Try again."),
+      actions: [okButton],
+    );
+
+    showDialog(
+        context: widget.context,
+        builder: (BuildContext context) => alertDialog);
   }
 }

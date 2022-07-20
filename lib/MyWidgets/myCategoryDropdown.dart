@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_demo/Models/CategoryListResponse.dart';
+import 'package:inventory_demo/Models/Category/CategoryListResponse.dart';
 import 'package:inventory_demo/Services/apiService.dart';
 
 class MyCategoryDropdown extends StatefulWidget {

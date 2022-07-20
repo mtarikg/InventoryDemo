@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:inventory_demo/Models/CategoryListResponse.dart';
-import 'package:inventory_demo/Models/PersonnelListResponse.dart';
-import 'package:inventory_demo/Models/PersonnelPropertyListResponse.dart';
-import '../Models/PropertyListResponse.dart';
+import 'package:inventory_demo/Models/Category/CategoryListResponse.dart';
+import 'package:inventory_demo/Models/Personnel/PersonnelListResponse.dart';
+import 'package:inventory_demo/Models/PersonnelProperty/PersonnelPropertyListResponse.dart';
+import '../Models/Property/PropertyListResponse.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_demo/Models/PersonnelListResponse.dart';
+import 'package:inventory_demo/Models/Personnel/PersonnelListResponse.dart';
 import 'package:inventory_demo/Services/apiService.dart';
 import '../MyWidgets/myAppBar.dart';
 

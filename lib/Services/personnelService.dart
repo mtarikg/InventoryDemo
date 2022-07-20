@@ -1,5 +1,5 @@
 import 'package:inventory_demo/Services/apiService.dart';
-import '../Models/PropertyListResponse.dart';
+import '../Models/Property/PropertyListResponse.dart';
 
 class PersonnelService {
   ApiService apiService = ApiService();
