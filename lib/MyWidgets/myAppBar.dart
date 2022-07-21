@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_demo/Shared/loginPage.dart';
+import 'package:inventory_demo/Shared/Widgets/loginPage.dart';
 
 class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;

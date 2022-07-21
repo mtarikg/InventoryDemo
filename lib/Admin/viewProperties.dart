@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:inventory_demo/MyWidgets/myAlertDialog.dart';
 import 'package:inventory_demo/Services/adminService.dart';
 import 'addPropertyForPersonnel.dart';
 import 'editProperty.dart';
@@ -44,7 +44,7 @@ class _ViewPropertiesState extends State<ViewProperties> {
                 itemBuilder: (BuildContext context, int index) {
                   int id = snapshot.data![index].id;
                   String name = snapshot.data![index].name.toString();
-                  String imageURL = snapshot.data![index].imageURL.toString();
+                  String? imageURL = snapshot.data![index].imageURL;
                   String fullDetail =
                       snapshot.data![index].fullDetail.toString();
                   String shortDescription =
@@ -64,8 +64,15 @@ class _ViewPropertiesState extends State<ViewProperties> {
                           children: [
                             Row(
                               children: [
-                                Image.memory(base64Decode(imageURL),
-                                    width: 100, height: 100),
+                                if (imageURL == null) ...[
+                                  Image.asset("assets/noPropertyImage.jpg",
+                                      width: 100, height: 100)
+                                ] else ...[
+                                  Image.memory(
+                                      base64Decode(imageURL.toString()),
+                                      width: 100,
+                                      height: 100),
+                                ],
                                 Expanded(
                                   child: Align(
                                     alignment: Alignment.center,
@@ -82,16 +89,19 @@ class _ViewPropertiesState extends State<ViewProperties> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: Text(name,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 35),
+                                    child: Text(name,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                  ),
                                 ),
                                 if (widget.buttonName != null) ...[
                                   TextButton(
                                       onPressed: widget.buttonName! ==
                                               "Add to Personnel"
                                           ? () {
-                                              _addtoPersonnel(id);
+                                              _addToPersonnel(id);
                                             }
                                           : widget.buttonName! == "Edit"
                                               ? () {
@@ -126,7 +136,29 @@ class _ViewPropertiesState extends State<ViewProperties> {
 
   Future<void> _delete(int id) async {
     bool result = await AdminService().deleteProperty(id);
-    result ? alertComplete() : alertWarning();
+    result ? _alertComplete() : _alertError();
+  }
+
+  void _alertError() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return const MyAlertDialog(
+              title: "Error",
+              content: "The property could not be deleted. Try again.");
+        });
+  }
+
+  void _alertComplete() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return const MyAlertDialog(
+            title: "Complete",
+            content: "The property has been deleted successfully.",
+            pageToNavigate: AdminMainPage(),
+          );
+        });
   }
 
   void _edit(int id) {
@@ -134,48 +166,10 @@ class _ViewPropertiesState extends State<ViewProperties> {
         MaterialPageRoute(builder: (context) => EditProperty(propertyID: id)));
   }
 
-  void _addtoPersonnel(int id) {
+  void _addToPersonnel(int id) {
     Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => AddPropertyForPersonnel(propertyID: id)));
-  }
-
-  void alertComplete() {
-    Widget okButton = TextButton(
-        onPressed: () {
-          Navigator.of(context, rootNavigator: true).pop();
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const AdminMainPage()),
-              (route) => false);
-        },
-        child: const Text("OK"));
-
-    var alertDialog = AlertDialog(
-      title: const Text("Complete"),
-      content: const Text("The property has been deleted successfully."),
-      actions: [okButton],
-    );
-
-    showDialog(
-        context: context, builder: (BuildContext context) => alertDialog);
-  }
-
-  void alertWarning() {
-    Widget okButton = TextButton(
-        onPressed: () {
-          Navigator.of(context, rootNavigator: true).pop();
-        },
-        child: const Text("OK"));
-
-    var alertDialog = AlertDialog(
-      title: const Text("Error"),
-      content: const Text("The property could not be deleted. Try again."),
-      actions: [okButton],
-    );
-
-    showDialog(
-        context: context, builder: (BuildContext context) => alertDialog);
   }
 }

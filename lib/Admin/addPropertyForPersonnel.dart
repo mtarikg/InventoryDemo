@@ -20,7 +20,7 @@ class _AddPropertyForPersonnelState extends State<AddPropertyForPersonnel> {
   @override
   void initState() {
     super.initState();
-    futurePersonnel = ApiService().getPersonnels();
+    futurePersonnel = ApiService().getPersonnel();
   }
 
   @override

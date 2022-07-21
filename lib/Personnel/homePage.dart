@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
-
 import 'mainPage.dart';
 
 class HomePage extends StatefulWidget {

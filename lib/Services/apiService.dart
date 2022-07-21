@@ -6,10 +6,10 @@ import '../Models/Property/PropertyListResponse.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  var url = 'http://10.0.2.2:7058';
+  var url = 'http://10.0.2.2:7058/api';
 
   Future<List<PropertyListResponse>> getProperties() async {
-    final response = await http.get(Uri.parse('$url/api/Properties'));
+    final response = await http.get(Uri.parse('$url/Properties'));
 
     if (response.statusCode == 200) {
       return (json.decode(response.body) as List)
@@ -22,7 +22,7 @@ class ApiService {
 
   Future<PropertyListResponse> getPropertyByID(int propertyID) async {
     final response =
-        await http.get(Uri.parse('$url/api/Properties/$propertyID'));
+        await http.get(Uri.parse('$url/Properties/$propertyID'));
 
     if (response.statusCode == 200) {
       return PropertyListResponse.fromJson(json.decode(response.body));
@@ -32,19 +32,24 @@ class ApiService {
   }
 
   Future<List<CategoryListResponse>> getCategories() async {
-    final response = await http.get(Uri.parse('$url/api/Categories'));
+    final response = await http.get(Uri.parse('$url/Categories'));
 
     if (response.statusCode == 200) {
-      return (json.decode(response.body) as List)
+      var categories = (json.decode(response.body) as List)
           .map((item) => CategoryListResponse.fromJson(item))
           .toList();
+      categories.sort((a, b) {
+        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      });
+
+      return categories;
     } else {
       throw Exception('Failed to load the data of categories');
     }
   }
 
-  Future<List<PersonnelListResponse>> getPersonnels() async {
-    final response = await http.get(Uri.parse('$url/api/Personnels'));
+  Future<List<PersonnelListResponse>> getPersonnel() async {
+    final response = await http.get(Uri.parse('$url/Personnels'));
 
     if (response.statusCode == 200) {
       return (json.decode(response.body) as List)
@@ -58,7 +63,7 @@ class ApiService {
   Future<List<PersonnelPropertyListResponse>> getPropertiesOfPersonnel(
       int personnelID) async {
     final response =
-        await http.get(Uri.parse('$url/api/Personnels/$personnelID'));
+        await http.get(Uri.parse('$url/Personnels/$personnelID'));
 
     if (response.statusCode == 200) {
       return (json.decode(response.body) as List)

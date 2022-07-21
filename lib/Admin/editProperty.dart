@@ -3,9 +3,11 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:inventory_demo/Models/Property/PropertyEditRequest.dart';
+import 'package:inventory_demo/MyWidgets/myAlertDialog.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
 import 'package:inventory_demo/MyWidgets/myTextField.dart';
 import 'package:inventory_demo/Services/apiService.dart';
+import 'package:inventory_demo/Shared/Methods/sharedMethods.dart';
 import '../Models/Property/PropertyListResponse.dart';
 import '../Services/adminService.dart';
 import 'mainPage.dart';
@@ -30,16 +32,25 @@ class _EditPropertyState extends State<EditProperty> {
   @override
   void initState() {
     futureProperty = ApiService().getPropertyByID(widget.propertyID);
-    futureProperty.then((value) async {
-      quantityNotifier = ValueNotifier(value.quantity.toString());
-      descriptionNotifier = ValueNotifier(value.shortDescription);
-      fullDetailNotifier = ValueNotifier(value.fullDetail);
-      String base64Image = value.imageURL.toString();
-      base64Image.isEmpty ? imageLoaded = false : imageLoaded = true;
-      Uint8List decodedString = base64Decode(base64Image);
-      image = decodedString;
+    futureProperty.then((value) {
+      _initializeVariables(value);
     });
     super.initState();
+  }
+
+  void _initializeVariables(PropertyListResponse value) {
+    quantityNotifier = ValueNotifier(value.quantity.toString());
+    descriptionNotifier = ValueNotifier(value.shortDescription);
+    fullDetailNotifier = ValueNotifier(value.fullDetail);
+    Uint8List decodedString = _decodeImageToString(value);
+    image = decodedString;
+  }
+
+  Uint8List _decodeImageToString(PropertyListResponse value) {
+    String base64Image = value.imageURL.toString();
+    base64Image.isEmpty ? imageLoaded = false : imageLoaded = true;
+    Uint8List decodedString = base64Decode(base64Image);
+    return decodedString;
   }
 
   @override
@@ -54,10 +65,6 @@ class _EditPropertyState extends State<EditProperty> {
           future: futureProperty,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              // String imageURL = snapshot.data!.imageURL.toString();
-              // String shortDescription =
-              //     snapshot.data!.shortDescription.toString();
-              // String fullDetail = snapshot.data!.fullDetail.toString();
               return CustomScrollView(
                 slivers: [
                   SliverFillRemaining(
@@ -69,7 +76,7 @@ class _EditPropertyState extends State<EditProperty> {
                           if (imageLoaded) ...[
                             _showImage()
                           ] else ...[
-                            imagePicker()
+                            _imagePicker()
                           ],
                           Quantity(notifier: quantityNotifier),
                           ShortDescription(notifier: descriptionNotifier),
@@ -128,13 +135,13 @@ class _EditPropertyState extends State<EditProperty> {
                   ),
                 ],
               )
-            : imagePicker());
+            : _imagePicker());
   }
 
-  InkWell imagePicker() {
+  InkWell _imagePicker() {
     return InkWell(
       onTap: () async {
-        selectPhoto();
+        _selectPhoto();
       },
       child: Container(
         padding: const EdgeInsets.fromLTRB(75, 25, 75, 25),
@@ -147,7 +154,7 @@ class _EditPropertyState extends State<EditProperty> {
     );
   }
 
-  Future selectPhoto() {
+  Future _selectPhoto() {
     return showDialog(
         context: context,
         builder: (context) {
@@ -245,71 +252,61 @@ class CompleteButton extends StatefulWidget {
 class _CompleteButtonState extends State<CompleteButton> {
   @override
   Widget build(BuildContext context) {
-    bool quantityResult = widget.quantity.value != null;
-    bool descriptionResult = widget.description.value != null;
-    bool isEnabled = quantityResult && descriptionResult;
+    bool isEnabled = _enableButton();
 
     return ElevatedButton(
         onPressed: isEnabled
             ? () async {
-                String? imageURL;
-                if (widget.image != null) {
-                  final imageBytes = await widget.image!.readAsBytes();
-                  final base64Image = base64Encode(imageBytes);
-                  imageURL = base64Image;
-                }
-
-                PropertyEditRequest request = PropertyEditRequest(
-                    imageURL: imageURL,
-                    quantity: int.parse(widget.quantity.value),
-                    shortDescription: widget.description.value,
-                    fullDetail: widget.fullDetail.value);
-                bool result =
-                    await AdminService().editProperty(widget.id, request);
-
-                result ? alertComplete() : alertWarning();
+                await _completeOperation();
               }
             : null,
         child: const Text("Complete"));
   }
 
-  void alertComplete() {
-    Widget okButton = TextButton(
-        onPressed: () {
-          Navigator.of(widget.context, rootNavigator: true).pop();
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const AdminMainPage()),
-              (route) => false);
-        },
-        child: const Text("OK"));
+  Future<void> _completeOperation() async {
+    String? imageURL = await SharedMethods().convertImageToBase64(widget.image);
 
-    var alertDialog = AlertDialog(
-      title: const Text("Complete"),
-      content: const Text("The property has been updated successfully."),
-      actions: [okButton],
-    );
+    PropertyEditRequest request = _createPropertyEditRequest(imageURL);
+    bool result = await AdminService().editProperty(widget.id, request);
 
-    showDialog(
-        context: widget.context,
-        builder: (BuildContext context) => alertDialog);
+    result ? _alertComplete() : _alertError();
   }
 
-  void alertWarning() {
-    Widget okButton = TextButton(
-        onPressed: () {
-          Navigator.of(widget.context, rootNavigator: true).pop();
-        },
-        child: const Text("OK"));
+  PropertyEditRequest _createPropertyEditRequest(String? imageURL) {
+    PropertyEditRequest request = PropertyEditRequest(
+        imageURL: imageURL,
+        quantity: int.parse(widget.quantity.value),
+        shortDescription: widget.description.value,
+        fullDetail: widget.fullDetail.value);
+    return request;
+  }
 
-    var alertDialog = AlertDialog(
-      title: const Text("Error"),
-      content: const Text("The property could not be updated. Try again."),
-      actions: [okButton],
-    );
+  bool _enableButton() {
+    bool quantityResult = widget.quantity.value != null;
+    bool descriptionResult = widget.description.value != null;
+    bool result = quantityResult && descriptionResult;
+    return result;
+  }
 
+  void _alertError() {
     showDialog(
-        context: widget.context,
-        builder: (BuildContext context) => alertDialog);
+        context: context,
+        builder: (context) {
+          return const MyAlertDialog(
+              title: "Error",
+              content: "The property could not be updated. Try again.");
+        });
+  }
+
+  void _alertComplete() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return const MyAlertDialog(
+            title: "Complete",
+            content: "The property has been updated successfully.",
+            pageToNavigate: AdminMainPage(),
+          );
+        });
   }
 }

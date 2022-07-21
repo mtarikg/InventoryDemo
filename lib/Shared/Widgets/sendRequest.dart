@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
 import 'package:inventory_demo/MyWidgets/myCategoryDropdown.dart';
 import 'package:inventory_demo/MyWidgets/myTextField.dart';
+import '../../MyWidgets/myAlertDialog.dart';
 
 class SendRequest extends StatefulWidget {
   final String title;
@@ -127,28 +128,21 @@ class _SendButtonState extends State<SendButton> {
     return ElevatedButton(
         onPressed: isEnabled
             ? () {
-                alertComplete();
+                _alertComplete();
               }
             : null,
         child: const Text("Send your request"));
   }
 
-  void alertComplete() {
-    Widget okButton = TextButton(
-        onPressed: () {
-          Navigator.of(widget.context, rootNavigator: true).pop();
-        },
-        child: const Text("OK"));
-
-    var alertDialog = AlertDialog(
-      title: const Text("Complete"),
-      content: const Text("Your request has been sent successfully."),
-      actions: [okButton],
-    );
-
+  void _alertComplete() {
     showDialog(
-        context: widget.context,
-        builder: (BuildContext context) => alertDialog);
+        context: context,
+        builder: (context) {
+          return const MyAlertDialog(
+            title: "Complete",
+            content: "Your request has been sent successfully.",
+          );
+        });
   }
 }
 

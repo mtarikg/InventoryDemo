@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_demo/Shared/sendRequest.dart';
+import 'package:inventory_demo/Shared/Widgets/sendRequest.dart';
 import 'homePage.dart';
 import 'profilePage.dart';
 

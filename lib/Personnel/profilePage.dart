@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:inventory_demo/Models/Property/PropertyListResponse.dart';
 import 'package:inventory_demo/MyWidgets/myCategoryDropdown.dart';
@@ -81,8 +83,7 @@ class _ProfilePageState extends State<ProfilePage>
                       builder: (context, secondSnapshot) {
                         if (secondSnapshot.hasData) {
                           String name = secondSnapshot.data!.name.toString();
-                          String imageURL =
-                              secondSnapshot.data!.imageURL.toString();
+                          String? imageURL = secondSnapshot.data!.imageURL;
                           String shortDescription =
                               secondSnapshot.data!.shortDescription.toString();
 
@@ -101,8 +102,17 @@ class _ProfilePageState extends State<ProfilePage>
                                   children: [
                                     Row(
                                       children: [
-                                        Image.network(imageURL,
-                                            height: 100, width: 100),
+                                        if (imageURL == null) ...[
+                                          Image.asset(
+                                              "assets/noPropertyImage.jpg",
+                                              width: 100,
+                                              height: 100)
+                                        ] else ...[
+                                          Image.memory(
+                                              base64Decode(imageURL.toString()),
+                                              width: 100,
+                                              height: 100),
+                                        ],
                                         Expanded(
                                           child: Column(
                                             children: [
@@ -184,8 +194,7 @@ class _ProfilePageState extends State<ProfilePage>
 
                         if (secondSnapshot.hasData) {
                           String name = secondSnapshot.data!.name.toString();
-                          String imageURL =
-                              secondSnapshot.data!.imageURL.toString();
+                          String? imageURL = secondSnapshot.data!.imageURL;
                           String shortDescription =
                               secondSnapshot.data!.shortDescription.toString();
 
@@ -204,8 +213,17 @@ class _ProfilePageState extends State<ProfilePage>
                                   children: [
                                     Row(
                                       children: [
-                                        Image.network(imageURL,
-                                            height: 100, width: 100),
+                                        if (imageURL == null) ...[
+                                          Image.asset(
+                                              "assets/noPropertyImage.jpg",
+                                              width: 100,
+                                              height: 100)
+                                        ] else ...[
+                                          Image.memory(
+                                              base64Decode(imageURL.toString()),
+                                              width: 100,
+                                              height: 100),
+                                        ],
                                         Expanded(
                                           child: Column(
                                             children: [

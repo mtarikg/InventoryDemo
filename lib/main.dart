@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_demo/Admin/mainPage.dart';
-import 'package:inventory_demo/Personnel/mainPage.dart';
-import 'package:inventory_demo/Shared/loginPage.dart';
+import 'package:inventory_demo/Shared/Widgets/loginPage.dart';
 
 void main() {
   runApp(const MyApp());

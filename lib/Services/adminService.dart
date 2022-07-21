@@ -4,10 +4,10 @@ import 'package:inventory_demo/Models/Property/PropertyAddRequest.dart';
 import 'package:inventory_demo/Models/Property/PropertyEditRequest.dart';
 
 class AdminService {
-  var url = 'http://10.0.2.2:7058';
+  var url = 'http://10.0.2.2:7058/api';
 
   Future<bool> addProperty(PropertyAddRequest request) async {
-    final response = await http.post(Uri.parse('$url/api/Properties'),
+    final response = await http.post(Uri.parse('$url/Properties'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -26,7 +26,7 @@ class AdminService {
 
   Future<bool> deleteProperty(int id) async {
     final response = await http.delete(
-      Uri.parse('$url/api/Properties/?id=$id'),
+      Uri.parse('$url/Properties/?id=$id'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -36,7 +36,7 @@ class AdminService {
   }
 
   Future<bool> editProperty(int id, PropertyEditRequest request) async {
-    final response = await http.put(Uri.parse('$url/api/Properties/?id=$id'),
+    final response = await http.put(Uri.parse('$url/Properties/?id=$id'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

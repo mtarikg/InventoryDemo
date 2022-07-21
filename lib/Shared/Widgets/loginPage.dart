@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
 import 'package:inventory_demo/Personnel/mainPage.dart';
-import '../Admin/mainPage.dart';
+import '../../Admin/mainPage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
