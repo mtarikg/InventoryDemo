@@ -16,6 +16,7 @@ namespace InventoryDemo.Business.AutoMapper
         public MapProfile()
         {
             CreateMap<Category, CategoryListResponse>();
+            CreateMap<CategoryAddRequest, Category>();
             CreateMap<Property, PropertyListResponse>();
             CreateMap<PropertyAddRequest, Property>();
             CreateMap<PropertyEditRequest, Property>();
