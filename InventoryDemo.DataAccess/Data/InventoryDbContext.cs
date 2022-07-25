@@ -37,22 +37,14 @@ namespace InventoryDemo.DataAccess.Data
                 .HasForeignKey(x => x.UserID)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<Property>().HasMany(p => p.Personnels)
+                .WithOne(pp => pp.Property)
+                .HasForeignKey(x => x.PropertyID)
+                .OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<Category>().HasData(
                 new Category { ID = 1, Name = "Mobile Phones" },
                 new Category { ID = 2, Name = "Computers" }
-                );
-
-            modelBuilder.Entity<Property>().HasData(
-                new Property
-                {
-                    ID = 1,
-                    Name = "iPhone 8 PLUS",
-                    ImageURL = "https://cdn.vatanbilgisayar.com/Upload/PRODUCT/apple/thumb/v2-87996_large.jpg",
-                    Quantity = 10,
-                    ShortDescription = "64 GB, UZAY GRİSİ",
-                    CategoryID = 1,
-                    CreatedDate = DateTime.Now
-                }
                 );
 
             modelBuilder.Entity<Role>().HasData(new Role { ID = 1, Name = "Admin" });
@@ -63,10 +55,6 @@ namespace InventoryDemo.DataAccess.Data
 
             modelBuilder.Entity<Personnel>().HasData(
                 new Personnel { ID = 2, FullName = "Tarık Göl", Username = "mtarikg", Password = "Test", RoleID = 2 }
-                );
-
-            modelBuilder.Entity<PersonnelsProperties>().HasData(
-                new PersonnelsProperties { UserID = 2, PropertyID = 1, DueOn = new DateTime(2022, 12, 31, 23, 59, 59) }
                 );
         }
     }

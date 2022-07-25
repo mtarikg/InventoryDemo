@@ -94,19 +94,14 @@ namespace InventoryDemo.DataAccess.Migrations
                     b.Property<DateTime>("DueOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsWaiting")
+                        .HasColumnType("bit");
+
                     b.HasKey("UserID", "PropertyID");
 
                     b.HasIndex("PropertyID");
 
                     b.ToTable("PersonnelsProperties");
-
-                    b.HasData(
-                        new
-                        {
-                            UserID = 2,
-                            PropertyID = 1,
-                            DueOn = new DateTime(2022, 12, 31, 23, 59, 59, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("InventoryDemo.Entities.Concretes.Property", b =>
@@ -144,18 +139,6 @@ namespace InventoryDemo.DataAccess.Migrations
                     b.HasIndex("CategoryID");
 
                     b.ToTable("Properties");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            CategoryID = 1,
-                            CreatedDate = new DateTime(2022, 7, 16, 22, 14, 17, 490, DateTimeKind.Local).AddTicks(16),
-                            ImageURL = "https://cdn.vatanbilgisayar.com/Upload/PRODUCT/apple/thumb/v2-87996_large.jpg",
-                            Name = "iPhone 8 PLUS",
-                            Quantity = 10,
-                            ShortDescription = "64 GB, UZAY GRİSİ"
-                        });
                 });
 
             modelBuilder.Entity("InventoryDemo.Entities.Concretes.Role", b =>
@@ -240,7 +223,7 @@ namespace InventoryDemo.DataAccess.Migrations
                     b.HasOne("InventoryDemo.Entities.Concretes.Property", "Property")
                         .WithMany("Personnels")
                         .HasForeignKey("PropertyID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("InventoryDemo.Entities.Concretes.Personnel", "Personnel")

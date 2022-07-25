@@ -13,5 +13,6 @@ namespace InventoryDemo.Entities.Concretes
         public int PropertyID { get; set; }
         public Property Property { get; set; }
         public DateTime DueOn { get; set; }
+        public bool IsWaiting { get; set; }
     }
 }

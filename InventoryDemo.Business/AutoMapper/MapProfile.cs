@@ -22,6 +22,8 @@ namespace InventoryDemo.Business.AutoMapper
             CreateMap<PropertyEditRequest, Property>();
             CreateMap<Personnel, PersonnelListResponse>();
             CreateMap<PersonnelsProperties, PersonnelPropertyListResponse>();
+            CreateMap<PersonnelPropertyAddRequest, PersonnelsProperties>();
+            CreateMap<PersonnelPropertyEditRequest, PersonnelsProperties>();
         }
     }
 }

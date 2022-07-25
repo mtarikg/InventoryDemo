@@ -31,11 +31,6 @@ namespace InventoryDemo.Business.Concretes
             return result;
         }
 
-        public async Task<bool> AddPropertyToPersonnel(int userID, int propertyID, DateTime dueDate)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task DeleteProperty(int id)
         {
             await propertyRepository.Delete(id);

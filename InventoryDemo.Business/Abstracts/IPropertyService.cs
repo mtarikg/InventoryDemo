@@ -16,6 +16,5 @@ namespace InventoryDemo.Business.Abstracts
         Task<int> AddProperty(PropertyAddRequest propertyAddRequest);
         Task<int> EditProperty(PropertyEditRequest propertyEditRequest);
         Task DeleteProperty(int id);
-        Task<bool> AddPropertyToPersonnel(int userID, int propertyID, DateTime dueDate);
     }
 }

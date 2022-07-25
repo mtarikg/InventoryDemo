@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace InventoryDemo.DataAccess.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -87,7 +87,8 @@ namespace InventoryDemo.DataAccess.Migrations
                 {
                     UserID = table.Column<int>(type: "int", nullable: false),
                     PropertyID = table.Column<int>(type: "int", nullable: false),
-                    DueOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DueOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsWaiting = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,8 +97,7 @@ namespace InventoryDemo.DataAccess.Migrations
                         name: "FK_PersonnelsProperties_Properties_PropertyID",
                         column: x => x.PropertyID,
                         principalTable: "Properties",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ID");
                     table.ForeignKey(
                         name: "FK_PersonnelsProperties_Users_UserID",
                         column: x => x.UserID,
@@ -124,11 +124,6 @@ namespace InventoryDemo.DataAccess.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Properties",
-                columns: new[] { "ID", "CategoryID", "CreatedDate", "FullDetail", "ImageURL", "Name", "Quantity", "ShortDescription" },
-                values: new object[] { 1, 1, new DateTime(2022, 7, 16, 22, 14, 17, 490, DateTimeKind.Local).AddTicks(16), null, "https://cdn.vatanbilgisayar.com/Upload/PRODUCT/apple/thumb/v2-87996_large.jpg", "iPhone 8 PLUS", 10, "64 GB, UZAY GRİSİ" });
-
-            migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "ID", "Discriminator", "Password", "RoleID", "Username" },
                 values: new object[] { 1, "Admin", "Test", 1, "admin1" });
@@ -137,11 +132,6 @@ namespace InventoryDemo.DataAccess.Migrations
                 table: "Users",
                 columns: new[] { "ID", "Discriminator", "FullName", "Password", "RoleID", "Username" },
                 values: new object[] { 2, "Personnel", "Tarık Göl", "Test", 2, "mtarikg" });
-
-            migrationBuilder.InsertData(
-                table: "PersonnelsProperties",
-                columns: new[] { "PropertyID", "UserID", "DueOn" },
-                values: new object[] { 1, 2, new DateTime(2022, 12, 31, 23, 59, 59, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersonnelsProperties_PropertyID",

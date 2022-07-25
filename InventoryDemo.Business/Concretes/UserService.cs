@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using InventoryDemo.Business.Abstracts;
 using InventoryDemo.DataAccess.Repositories.Abstracts;
+using InventoryDemo.DTOs.Requests;
 using InventoryDemo.DTOs.Responses;
 using InventoryDemo.Entities.Abstracts;
+using InventoryDemo.Entities.Concretes;
 
 namespace InventoryDemo.Business.Concretes
 {
@@ -15,6 +17,19 @@ namespace InventoryDemo.Business.Concretes
         {
             this.userRepository = userRepository;
             this.mapper = mapper;
+        }
+
+        public async Task<ICollection<int>> AddPropertyToPersonnel(PersonnelPropertyAddRequest personnelPropertyAddRequest)
+        {
+            var personnelProperty = mapper.Map<PersonnelsProperties>(personnelPropertyAddRequest);
+            var result = await userRepository.AddPropertyToPersonnel(personnelProperty);
+
+            return result;
+        }
+
+        public async Task DeletePersonnelProperty(int personnelID, int propertyID)
+        {
+            await userRepository.DeletePropertyFromPersonnel(personnelID, propertyID);
         }
 
         public async Task<ICollection<PersonnelListResponse>> GetAllPersonnels()
@@ -31,6 +46,18 @@ namespace InventoryDemo.Business.Concretes
             var personnelPropertiesListResponse = mapper.Map<List<PersonnelPropertyListResponse>>(propertiesOfPersonnel);
 
             return personnelPropertiesListResponse;
+        }
+
+        public async Task<int> EditPersonnelProperty(PersonnelPropertyEditRequest personnelPropertyEditRequest)
+        {
+            var personnelProperty = await userRepository
+                .GetPersonnelsPropertiesByID(personnelPropertyEditRequest.UserID, personnelPropertyEditRequest.PropertyID);
+            var editedPersonnelProperty = mapper.Map<PersonnelsProperties>(personnelPropertyEditRequest);
+            editedPersonnelProperty.DueOn = personnelProperty.DueOn;
+            personnelProperty = editedPersonnelProperty;
+            var result = await userRepository.UpdatePersonnelProperty(personnelProperty);
+
+            return result;
         }
 
         public async Task<User> ValidateUser(string username, string password)

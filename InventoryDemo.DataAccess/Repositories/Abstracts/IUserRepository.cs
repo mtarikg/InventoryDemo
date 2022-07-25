@@ -13,5 +13,9 @@ namespace InventoryDemo.DataAccess.Repositories.Abstracts
         Task<User> ValidateUser(string username, string password);
         Task<ICollection<User>> GetUsersByRole(int roleID);
         Task<ICollection<PersonnelsProperties>> GetPersonnelProperties(int userID);
+        Task<PersonnelsProperties> GetPersonnelsPropertiesByID(int userID, int propertyID);
+        Task<ICollection<int>> AddPropertyToPersonnel(PersonnelsProperties personnelProperty);
+        Task DeletePropertyFromPersonnel(int userID, int propertyID);
+        Task<int> UpdatePersonnelProperty(PersonnelsProperties personnelsProperty);
     }
 }
