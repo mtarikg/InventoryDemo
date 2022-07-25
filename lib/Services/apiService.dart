@@ -21,8 +21,7 @@ class ApiService {
   }
 
   Future<PropertyListResponse> getPropertyByID(int propertyID) async {
-    final response =
-        await http.get(Uri.parse('$url/Properties/$propertyID'));
+    final response = await http.get(Uri.parse('$url/Properties/$propertyID'));
 
     if (response.statusCode == 200) {
       return PropertyListResponse.fromJson(json.decode(response.body));
@@ -61,14 +60,20 @@ class ApiService {
   }
 
   Future<List<PersonnelPropertyListResponse>> getPropertiesOfPersonnel(
-      int personnelID) async {
+      int personnelID, bool isWaiting) async {
     final response =
-        await http.get(Uri.parse('$url/Personnels/$personnelID'));
+        await http.get(Uri.parse('$url/Personnels/$personnelID/Properties'));
 
     if (response.statusCode == 200) {
-      return (json.decode(response.body) as List)
+      var personnelProperties = (json.decode(response.body) as List)
           .map((item) => PersonnelPropertyListResponse.fromJson(item))
+          .where((item) => item.isWaiting == isWaiting)
           .toList();
+      personnelProperties.sort((a, b) {
+        return a.dueOn.toString().compareTo(b.dueOn.toString());
+      });
+
+      return personnelProperties;
     } else {
       throw Exception('Failed to load the data of personnel properties');
     }

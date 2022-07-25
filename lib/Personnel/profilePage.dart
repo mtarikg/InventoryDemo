@@ -23,7 +23,7 @@ class _ProfilePageState extends State<ProfilePage>
 
   @override
   void initState() {
-    futurePersonnelProperties = ApiService().getPropertiesOfPersonnel(2);
+    futurePersonnelProperties = ApiService().getPropertiesOfPersonnel(2, false);
     super.initState();
   }
 
@@ -77,6 +77,9 @@ class _ProfilePageState extends State<ProfilePage>
                     int propertyID = snapshot.data![index].propertyID;
                     DateTime dueOn =
                         DateTime.parse(snapshot.data![index].dueOn);
+                    final day = dueOn.day.toString().padLeft(2, "0");
+                    final month = dueOn.month.toString().padLeft(2, "0");
+                    final year = dueOn.year.toString();
 
                     return FutureBuilder<PropertyListResponse>(
                       future: ApiService().getPropertyByID(propertyID),
@@ -97,10 +100,12 @@ class _ProfilePageState extends State<ProfilePage>
                               ),
                               child: Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(15, 15, 5, 5),
-                                child: Column(
+                                    const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
                                   children: [
-                                    Row(
+                                    Column(
                                       children: [
                                         if (imageURL == null) ...[
                                           Image.asset(
@@ -113,33 +118,23 @@ class _ProfilePageState extends State<ProfilePage>
                                               width: 100,
                                               height: 100),
                                         ],
-                                        Expanded(
-                                          child: Column(
-                                            children: [
-                                              Text(shortDescription == "null"
-                                                  ? "No details"
-                                                  : shortDescription),
-                                              const SizedBox(height: 10),
-                                              Text(
-                                                  "Until: ${dueOn.day}.${dueOn.month}.${dueOn.year}",
-                                                  style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold))
-                                            ],
-                                          ),
-                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(name,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold)),
                                       ],
                                     ),
-                                    const SizedBox(height: 10),
-                                    Row(
+                                    Column(
                                       children: [
-                                        Expanded(
-                                          child: Text(name,
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
+                                        Text(shortDescription == "null"
+                                            ? "No details"
+                                            : shortDescription),
+                                        const SizedBox(height: 10),
+                                        Text("Until: $day.$month.$year",
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold))
                                       ],
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),
