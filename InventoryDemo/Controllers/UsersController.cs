@@ -45,7 +45,7 @@ namespace InventoryDemo.API.Controllers
                 return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
             }
 
-            return Ok(new { message = "Hatalı kullanıcı adı veya şifre, lütfen tekrar deneyiniz!" });
+            return Ok(new { message = "Wrong username or password. Please try again!" });
         }
     }
 }
