@@ -61,7 +61,9 @@ class _PersonnelMainPageState extends State<PersonnelMainPage> {
         HomePage(),
         ProfilePage(),
         SendRequest(
-            title: "Send a Property Request", backgroundColor: Colors.orange)
+            title: "Send a Property Request",
+            backgroundColor: Colors.orange,
+            pageToNavigate: PersonnelMainPage())
       ],
     );
   }

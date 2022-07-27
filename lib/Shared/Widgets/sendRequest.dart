@@ -7,8 +7,13 @@ import '../../MyWidgets/myAlertDialog.dart';
 class SendRequest extends StatefulWidget {
   final String title;
   final dynamic backgroundColor;
+  final dynamic pageToNavigate;
 
-  const SendRequest({Key? key, required this.title, this.backgroundColor})
+  const SendRequest(
+      {Key? key,
+      required this.title,
+      required this.backgroundColor,
+      required this.pageToNavigate})
       : super(key: key);
 
   @override
@@ -50,6 +55,8 @@ class _SendRequestState extends State<SendRequest> {
                       builder: (context, value) {
                         return SendButton(
                             context: context,
+                            backgroundColor: widget.backgroundColor,
+                            pageToNavigate: widget.pageToNavigate,
                             title: titleValue,
                             description: descriptionValue,
                             category: categoryValue);
@@ -96,6 +103,8 @@ class Title extends StatelessWidget {
 
 class SendButton extends StatefulWidget {
   final BuildContext context;
+  final dynamic backgroundColor;
+  final dynamic pageToNavigate;
   final ValueNotifier title;
   final ValueNotifier description;
   final ValueNotifier category;
@@ -103,6 +112,8 @@ class SendButton extends StatefulWidget {
   const SendButton(
       {Key? key,
       required this.context,
+      required this.backgroundColor,
+      required this.pageToNavigate,
       required this.title,
       required this.description,
       required this.category})
@@ -126,21 +137,23 @@ class _SendButtonState extends State<SendButton> {
     bool isEnabled = titleResult && descriptionResult && categoryResult;
 
     return ElevatedButton(
+        style: ElevatedButton.styleFrom(primary: widget.backgroundColor),
         onPressed: isEnabled
             ? () {
-                _alertComplete();
+                _alertComplete(widget.pageToNavigate);
               }
             : null,
         child: const Text("Send your request"));
   }
 
-  void _alertComplete() {
+  void _alertComplete(dynamic pageToNavigate) {
     showDialog(
         context: context,
         builder: (context) {
-          return const MyAlertDialog(
+          return MyAlertDialog(
             title: "Complete",
             content: "Your request has been sent successfully.",
+            pageToNavigate: pageToNavigate,
           );
         });
   }
