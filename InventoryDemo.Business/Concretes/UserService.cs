@@ -62,8 +62,7 @@ namespace InventoryDemo.Business.Concretes
 
         public async Task<User> ValidateUser(string username, string password)
         {
-            var allUsers = await userRepository.GetAllEntities();
-            var user = allUsers.FirstOrDefault(u => u.Username == username && u.Password == password);
+            var user = await userRepository.ValidateUser(username, password);
 
             return user;
         }
