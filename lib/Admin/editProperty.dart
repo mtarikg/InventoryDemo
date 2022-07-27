@@ -73,14 +73,18 @@ class _EditPropertyState extends State<EditProperty> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
+                          const SizedBox(height: 10),
                           if (imageLoaded) ...[
                             _showImage()
                           ] else ...[
                             _imagePicker()
                           ],
                           Quantity(notifier: quantityNotifier),
+                          const SizedBox(height: 10),
                           ShortDescription(notifier: descriptionNotifier),
+                          const SizedBox(height: 10),
                           FullDetail(notifier: fullDetailNotifier),
+                          const SizedBox(height: 10),
                           AnimatedBuilder(
                               animation: Listenable.merge([
                                 quantityNotifier,

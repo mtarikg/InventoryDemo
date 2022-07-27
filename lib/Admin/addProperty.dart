@@ -44,6 +44,7 @@ class _AddPropertyState extends State<AddProperty> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      const SizedBox(height: 10),
                       if (!imageLoaded) ...[
                         _imagePicker(),
                       ] else ...[
@@ -59,6 +60,7 @@ class _AddPropertyState extends State<AddProperty> {
                       ShortDescription(notifier: descriptionNotifier),
                       const SizedBox(height: 10),
                       FullDetail(notifier: fullDetailNotifier),
+                      const SizedBox(height: 10),
                       AnimatedBuilder(
                           animation: Listenable.merge([
                             nameNotifier,

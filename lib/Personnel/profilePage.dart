@@ -1,7 +1,8 @@
 import 'dart:convert';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:inventory_demo/Models/Property/PropertyListResponse.dart';
+import 'package:inventory_demo/Models/User.dart';
 import 'package:inventory_demo/MyWidgets/myCategoryDropdown.dart';
 import 'package:inventory_demo/Services/apiService.dart';
 import 'package:inventory_demo/Services/personnelService.dart';
@@ -9,21 +10,24 @@ import '../Models/PersonnelProperty/PersonnelPropertyListResponse.dart';
 import '../MyWidgets/myAppBar.dart';
 import 'mainPage.dart';
 
-class ProfilePage extends StatefulWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage>
+class _ProfilePageState extends ConsumerState<ProfilePage>
     with AutomaticKeepAliveClientMixin {
   late Future<List<PersonnelPropertyListResponse>> futurePersonnelProperties;
   ValueNotifier categoryValue = ValueNotifier(null);
+  late int userID;
 
   @override
   void initState() {
-    futurePersonnelProperties = ApiService().getPropertiesOfPersonnel(2, false);
+    userID = ref.read(userProvider).id;
+    futurePersonnelProperties =
+        ApiService().getPropertiesOfPersonnel(userID, false);
     super.initState();
   }
 

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:inventory_demo/Models/User.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
 import 'package:inventory_demo/Personnel/mainPage.dart';
+import 'package:inventory_demo/Services/apiService.dart';
 import '../../Admin/mainPage.dart';
+import '../../MyWidgets/myAlertDialog.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -18,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const MyAppBar(
-        title: "Login",
+        title: "Inventory Demo",
         centerTitle: true,
         backgroundColor: Colors.blue,
         hasLogOutButton: false,
@@ -41,33 +45,12 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.all(10.0),
                         child: _passwordTextField(),
                       ),
+                      const SizedBox(height: 25),
                       LoginButton(
                           username: username,
                           password: password,
                           context: context,
                           formKey: _formKey),
-                      TextButton(
-                        child: const Text("Proceed as Personnel"),
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const PersonnelMainPage()),
-                              (route) => false);
-                        },
-                      ),
-                      TextButton(
-                        child: const Text("Proceed as Admin"),
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const AdminMainPage()),
-                              (route) => false);
-                        },
-                      ),
                     ],
                   ),
                 ),
@@ -109,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class LoginButton extends StatelessWidget {
+class LoginButton extends ConsumerWidget {
   final String username;
   final String password;
   final BuildContext context;
@@ -124,7 +107,7 @@ class LoginButton extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     var isUsernameNull = username.isEmpty;
     var isPasswordNull = password.isEmpty;
     var result = isUsernameNull || isPasswordNull;
@@ -141,8 +124,8 @@ class LoginButton extends StatelessWidget {
       child: TextButton(
         onPressed: isDisabled
             ? null
-            : () {
-                _loginWithUsernamePassword();
+            : () async {
+                await _loginWithUsernamePassword(username, password, ref);
               },
         child: const Text(
           "Login",
@@ -154,6 +137,48 @@ class LoginButton extends StatelessWidget {
       ),
     );
   }
-}
 
-void _loginWithUsernamePassword() {}
+  Future<void> _loginWithUsernamePassword(
+      String username, String password, WidgetRef ref) async {
+    var formState = formKey.currentState;
+    if (formState!.validate()) {
+      formState.save();
+
+      await ApiService().userLogin(username, password).then((userData) {
+        if (userData is String) {
+          _alertError(userData);
+        } else {
+          User user = _createUser(userData, ref);
+          if (user.roleID == 1) {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const AdminMainPage()),
+                (route) => false);
+          } else if (user.roleID == 2) {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const PersonnelMainPage()),
+                (route) => false);
+          }
+        }
+      });
+    }
+  }
+
+  User _createUser(userData, WidgetRef ref) {
+    int id = int.parse(userData[0]);
+    int roleID = int.parse(userData[1]);
+    User user = User(id: id, roleID: roleID);
+    ref.read(userProvider.notifier).addUser(user);
+    return user;
+  }
+
+  void _alertError(String content) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return MyAlertDialog(title: "Error", content: content);
+        });
+  }
+}
