@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:inventory_demo/Models/Property/PropertyEditRequest.dart';
 import 'package:inventory_demo/MyWidgets/myAlertDialog.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
@@ -168,13 +169,13 @@ class _EditPropertyState extends State<EditProperty> {
               SimpleDialogOption(
                 child: const Text("Camera"),
                 onPressed: () {
-                  //camera();
+                  _camera();
                 },
               ),
               SimpleDialogOption(
                 child: const Text("Gallery"),
                 onPressed: () {
-                  //gallery();
+                  _gallery();
                 },
               ),
               SimpleDialogOption(
@@ -186,6 +187,32 @@ class _EditPropertyState extends State<EditProperty> {
             ],
           );
         });
+  }
+
+  _camera() async {
+    Navigator.pop(context);
+    var selectedImage = await ImagePicker().pickImage(
+        source: ImageSource.camera,
+        maxWidth: 800,
+        maxHeight: 600,
+        imageQuality: 80);
+    setState(() {
+      image = File(selectedImage!.path);
+      imageLoaded = true;
+    });
+  }
+
+  _gallery() async {
+    Navigator.pop(context);
+    var selectedImage = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 600,
+        imageQuality: 80);
+    setState(() {
+      image = File(selectedImage!.path);
+      imageLoaded = true;
+    });
   }
 }
 

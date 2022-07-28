@@ -24,7 +24,7 @@ class Direct extends ConsumerWidget {
                 }
 
                 if (snapshot.hasData) {
-                  ref.watch(userProvider.notifier).addUser(snapshot.data!);
+                  ref.read(userProvider.notifier).addUser(snapshot.data!);
                   return _navigateToPage(snapshot.data);
                 }
 

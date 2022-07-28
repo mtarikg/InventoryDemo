@@ -80,7 +80,7 @@ class _ViewPropertiesState extends State<ViewProperties> {
                                         ? shortDescription == "null"
                                             ? "No details"
                                             : shortDescription
-                                        : "No details"),
+                                        : fullDetail),
                                   ),
                                 ),
                               ],
