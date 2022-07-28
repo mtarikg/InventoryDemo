@@ -136,7 +136,7 @@ class _AddPropertyForPersonnelState extends State<AddPropertyForPersonnel> {
           return const MyAlertDialog(
               title: "Error",
               content:
-                  "The property could not be added to the personnel. Try again.");
+                  "The property was added to the personnel before.");
         });
   }
 
