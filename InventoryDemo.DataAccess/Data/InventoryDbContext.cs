@@ -54,7 +54,8 @@ namespace InventoryDemo.DataAccess.Data
             modelBuilder.Entity<Admin>().HasData(new Admin { ID = 1, Username = "admin1", Password = "Test", RoleID = 1 });
 
             modelBuilder.Entity<Personnel>().HasData(
-                new Personnel { ID = 2, FullName = "Tarık Göl", Username = "mtarikg", Password = "Test", RoleID = 2 }
+                new Personnel { ID = 2, FullName = "Tarık Göl", Username = "mtarikg", Password = "Test", RoleID = 2 },
+                new Personnel { ID = 3, FullName = "Kaan Uzer", Username = "kaanuzer", Password = "Test", RoleID = 2 }
                 );
         }
     }
