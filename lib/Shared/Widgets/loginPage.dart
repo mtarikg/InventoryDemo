@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_demo/Models/User.dart';
 import 'package:inventory_demo/MyWidgets/myAppBar.dart';
-import 'package:inventory_demo/Personnel/mainPage.dart';
-import 'package:inventory_demo/Services/apiService.dart';
-import '../../Admin/mainPage.dart';
 import '../../MyWidgets/myAlertDialog.dart';
+import '../../Services/userService.dart';
+import 'directWidget.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -16,7 +13,12 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  late String username = "", password = "";
+  String username = "", password = "";
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
         labelText: "Password",
         hintText: "Please enter your password",
       ),
-      onChanged: (value) {
+      onSubmitted: (value) {
         setState(() {
           password = value.toString();
         });
@@ -83,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
         labelText: "Username",
         hintText: "Please enter your username",
       ),
-      onChanged: (value) {
+      onSubmitted: (value) {
         setState(() {
           username = value.toString();
         });
@@ -92,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class LoginButton extends ConsumerWidget {
+class LoginButton extends StatelessWidget {
   final String username;
   final String password;
   final BuildContext context;
@@ -107,7 +109,7 @@ class LoginButton extends ConsumerWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     var isUsernameNull = username.isEmpty;
     var isPasswordNull = password.isEmpty;
     var result = isUsernameNull || isPasswordNull;
@@ -125,7 +127,7 @@ class LoginButton extends ConsumerWidget {
         onPressed: isDisabled
             ? null
             : () async {
-                await _loginWithUsernamePassword(username, password, ref);
+                await _loginWithUsernamePassword(username, password);
               },
         child: const Text(
           "Login",
@@ -139,39 +141,22 @@ class LoginButton extends ConsumerWidget {
   }
 
   Future<void> _loginWithUsernamePassword(
-      String username, String password, WidgetRef ref) async {
+      String username, String password) async {
     var formState = formKey.currentState;
     if (formState!.validate()) {
       formState.save();
 
-      await ApiService().userLogin(username, password).then((userData) {
+      await UserService().userLogin(username, password).then((userData) {
         if (userData is String) {
           _alertError(userData);
         } else {
-          User user = _createUser(userData, ref);
-          if (user.roleID == 1) {
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const AdminMainPage()),
-                (route) => false);
-          } else if (user.roleID == 2) {
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const PersonnelMainPage()),
-                (route) => false);
-          }
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => Direct(user: userData)),
+              (route) => false);
         }
       });
     }
-  }
-
-  User _createUser(userData, WidgetRef ref) {
-    int id = int.parse(userData[0]);
-    int roleID = int.parse(userData[1]);
-    User user = User(id: id, roleID: roleID);
-    ref.read(userProvider.notifier).addUser(user);
-    return user;
   }
 
   void _alertError(String content) {

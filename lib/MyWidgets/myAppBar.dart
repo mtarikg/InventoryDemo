@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventory_demo/Shared/Widgets/loginPage.dart';
+import '../Services/secureStorageService.dart';
 
 class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -38,26 +40,32 @@ class _MyAppBarState extends State<MyAppBar> {
       centerTitle: widget.centerTitle,
       backgroundColor: widget.backgroundColor,
       actions: [
-        if (hasButton) ...[
-          const LogOutButton()
-        ]
+        if (hasButton) ...[const LogOutButton()]
       ],
     );
   }
 }
 
-class LogOutButton extends StatelessWidget {
+class LogOutButton extends ConsumerWidget {
   const LogOutButton({
     Key? key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
-        onPressed: () {
-          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const LoginPage()),
-              (route) => false);
+        onPressed: () async {
+          await SecureStorage()
+              .deleteSecureStorageData("key_uName")
+              .whenComplete(() => SecureStorage()
+                  .deleteSecureStorageData("key_pw")
+                  .whenComplete(() => {
+                        Navigator.of(context, rootNavigator: true)
+                            .pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginPage()),
+                                (route) => false)
+                      }));
         },
         icon: const Icon(Icons.logout));
   }
