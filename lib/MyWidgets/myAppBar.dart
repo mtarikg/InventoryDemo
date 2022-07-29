@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventory_demo/Shared/Widgets/loginPage.dart';
 import '../Services/secureStorageService.dart';
 
@@ -46,13 +45,13 @@ class _MyAppBarState extends State<MyAppBar> {
   }
 }
 
-class LogOutButton extends ConsumerWidget {
+class LogOutButton extends StatelessWidget {
   const LogOutButton({
     Key? key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return IconButton(
         onPressed: () async {
           await SecureStorage()

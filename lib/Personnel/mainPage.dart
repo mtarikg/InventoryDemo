@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_demo/Shared/Widgets/sendRequest.dart';
+import '../Models/User.dart';
 import 'homePage.dart';
 import 'profilePage.dart';
 
 class PersonnelMainPage extends StatefulWidget {
+  final User? user;
   final int? index;
 
-  const PersonnelMainPage({Key? key, this.index}) : super(key: key);
+  const PersonnelMainPage({Key? key, this.index, this.user}) : super(key: key);
 
   @override
   State<PersonnelMainPage> createState() => _PersonnelMainPageState();
@@ -57,13 +59,13 @@ class _PersonnelMainPageState extends State<PersonnelMainPage> {
     return PageView(
       physics: const NeverScrollableScrollPhysics(),
       controller: _pageController,
-      children: const [
-        HomePage(),
-        ProfilePage(),
+      children: [
+        HomePage(user: widget.user!),
+        ProfilePage(user: widget.user!),
         SendRequest(
             title: "Send a Property Request",
             backgroundColor: Colors.orange,
-            pageToNavigate: PersonnelMainPage())
+            pageToNavigate: PersonnelMainPage(user: widget.user!))
       ],
     );
   }

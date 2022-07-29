@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventory_demo/Admin/mainPage.dart';
 import 'package:inventory_demo/Personnel/mainPage.dart';
 import 'package:inventory_demo/Services/userService.dart';
 import '../../Models/User.dart';
 import 'loginPage.dart';
 
-class Direct extends ConsumerWidget {
+class Direct extends StatelessWidget {
   final User? user;
 
   const Direct({Key? key, this.user}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       body: user == null
           ? FutureBuilder<User?>(
@@ -24,7 +23,6 @@ class Direct extends ConsumerWidget {
                 }
 
                 if (snapshot.hasData) {
-                  ref.read(userProvider.notifier).addUser(snapshot.data!);
                   return _navigateToPage(snapshot.data);
                 }
 
@@ -36,10 +34,10 @@ class Direct extends ConsumerWidget {
   }
 
   Widget _navigateToPage(User? user) {
-    if (user!.id == 1) {
+    if (user!.roleID == 1) {
       return const AdminMainPage();
     } else {
-      return const PersonnelMainPage();
+      return PersonnelMainPage(user: user);
     }
   }
 }

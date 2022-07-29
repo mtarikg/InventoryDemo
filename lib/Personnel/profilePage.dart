@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:inventory_demo/Models/Property/PropertyListResponse.dart';
 import 'package:inventory_demo/Models/User.dart';
@@ -10,14 +9,16 @@ import '../Models/PersonnelProperty/PersonnelPropertyListResponse.dart';
 import '../MyWidgets/myAppBar.dart';
 import 'mainPage.dart';
 
-class ProfilePage extends ConsumerStatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+class ProfilePage extends StatefulWidget {
+  final User user;
+
+  const ProfilePage({Key? key, required this.user}) : super(key: key);
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends ConsumerState<ProfilePage>
+class _ProfilePageState extends State<ProfilePage>
     with AutomaticKeepAliveClientMixin {
   late Future<List<PersonnelPropertyListResponse>> futurePersonnelProperties;
   ValueNotifier categoryValue = ValueNotifier(null);
@@ -25,7 +26,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
   @override
   void initState() {
-    userID = ref.read(userProvider).id;
+    userID = widget.user.id;
     futurePersonnelProperties =
         ApiService().getPropertiesOfPersonnel(userID, false);
     super.initState();
@@ -277,7 +278,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-            builder: (context) => const PersonnelMainPage(index: 1)),
+            builder: (context) =>
+                PersonnelMainPage(user: widget.user, index: 1)),
         (route) => false);
   }
 

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../Models/PersonnelProperty/PersonnelPropertyEditRequest.dart';
 import '../Models/User.dart';
 import '../MyWidgets/myAppBar.dart';
@@ -11,21 +10,23 @@ import '../Services/apiService.dart';
 import '../Services/personnelService.dart';
 import 'mainPage.dart';
 
-class HomePage extends ConsumerStatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  final User user;
+
+  const HomePage({Key? key, required this.user}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage>
+class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
   late int userID;
   late Future<List<PersonnelPropertyListResponse>> futurePersonnelProperties;
 
   @override
   void initState() {
-    userID = ref.read(userProvider).id;
+    userID = widget.user.id;
     futurePersonnelProperties =
         ApiService().getPropertiesOfPersonnel(userID, true);
     super.initState();
@@ -171,7 +172,8 @@ class _HomePageState extends ConsumerState<HomePage>
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-            builder: (context) => const PersonnelMainPage(index: 0)),
+            builder: (context) =>
+                PersonnelMainPage(user: widget.user, index: 0)),
         (route) => false);
   }
 
